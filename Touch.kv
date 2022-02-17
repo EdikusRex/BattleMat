@@ -1,0 +1,131 @@
+#:kivy 1.8.0
+
+FloatLayout:
+    Map:
+        id: map
+
+    Painter:
+        id: painter
+
+    MapSelector:
+        id: map_selector
+        Button:
+            color: 1, 1, 1, 1
+            font_size: 25
+            size_hint: 0.1, 0.1
+            pos_hint: {"right":0.23, "top":1}
+            text: "Maps"
+            on_release: map_selector.show_maps()
+        StackLayout:
+            id: map_menu
+            orientation: "tb-lr"
+            pos_hint: {"x": 0.13, "top": 0.9}
+
+    CreatureSelector:
+        id: creature_selector
+        Button:
+            color: 1, 1, 1, 1
+            font_size: 25
+            size_hint: 0.1, 0.1
+            pos_hint: {"right":0.13, "top":1}
+            text: "Creatures"
+            on_release: creature_selector.show_creatures()
+        StackLayout:
+            id: creature_menu
+            orientation: "tb-lr"
+            pos_hint: {"x": 0.03, "top": 0.9}
+
+    Scaler:
+        id: scaler
+        min: 0
+        max: 500
+        value: 100
+        orientation: "vertical"
+        step: 1
+        size_hint: None, 0.5
+        pos_hint: {"top": 1.01, "right": 0.0558}
+        on_value: self.rescale(*args)
+
+    FloatLayout:
+        Button:
+            color: 1,1,1,1
+            font_size: 25
+            size_hint: 0.1, 0.1
+            text: "Undo"
+            on_release: painter.undo()
+            pos_hint: {"right":0.9, "top":0.1}
+        
+        Button:
+            color: 1,1,1,1
+            font_size: 25
+            size_hint: 0.1, 0.1
+            text: "Redo"
+            on_release: painter.redo()
+            pos_hint: {"right":1, "top":0.1}
+        
+        Button:
+            color: 0,0,0,1
+            font_size: 25
+            size_hint: 0.1, 0.1
+            text: "Eraser"
+            on_release: painter.draw_color("Eraser")
+            pos_hint: {"right":1, "top":0.2}
+
+    FloatLayout:
+        Button:
+            color: 1,1,1,1
+            font_size: 25
+            size_hint: 0.1, 0.1
+            text: "White"
+            on_release: painter.draw_color("White")
+            pos_hint: {"right":1, "top":1}
+
+        Button:
+            background_color: 1, 0, 0, 1
+            font_size: 25
+            size_hint: 0.1, 0.1
+            text: "Red"
+            on_release: painter.draw_color("Red")
+            pos_hint: {"right":1, "top":0.9}
+
+        Button:
+            background_color: 0, 1, 0, 1
+            font_size: 25
+            size_hint: 0.1, 0.1
+            text: "Green"
+            on_release: painter.draw_color("Green")
+            pos_hint: {"right":1, "top":0.8}
+
+        Button:
+            background_color: 0, 0, 1, 1
+            font_size: 25
+            size_hint: 0.1, 0.1
+            text: "Blue"
+            on_release: painter.draw_color("Blue")
+            pos_hint: {"right":1, "top":0.7}
+
+        Button:
+            background_color: 0.8, 0, 0.8, 1
+            font_size: 25
+            size_hint: 0.1, 0.1
+            text: "Pink"
+            on_release: painter.draw_color("Pink")
+            pos_hint: {"right":1, "top":0.6}
+
+<Creature>:
+    drag_rectangle: self.x, self.y, self.width, self.height
+    drag_timeout: 10000000
+    drag_distance: 0
+    size: 100, 100
+    size_hint_x: None
+    size_hint_y: None
+
+<Map>:
+    source: "Assets/blank.jpg"
+    size_hint: 1, 1
+
+<MapSelector>:
+    size_hint: 1, 1
+
+<CreatureSelector>:
+    size_hint: 1, 1
