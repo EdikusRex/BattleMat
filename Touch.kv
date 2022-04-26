@@ -67,9 +67,17 @@ FloatLayout:
             color: 0,0,0,1
             font_size: 25
             size_hint: 0.1, 0.1
-            text: "Eraser"
+            text: "Erase"
             on_release: painter.draw_color("Eraser")
             pos_hint: {"right":1, "top":0.2}
+        
+        Button:
+            color: 1,1,1,1
+            font_size: 25
+            size_hint: 0.1, 0.1
+            text: "Delete"
+            on_release: creature_selector.delete()
+            pos_hint: {"right":0.9, "top":0.2}
 
     FloatLayout:
         Button:
