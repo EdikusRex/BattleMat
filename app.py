@@ -3,7 +3,6 @@ from kivy.app import App
 from kivy.lang import Builder
 
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.stacklayout import StackLayout
 from kivy.uix.button import Button
 from kivy.uix.image import Image
 from kivy.uix.behaviors import DragBehavior
@@ -85,6 +84,9 @@ class CreatureSelector(FloatLayout):
         creature = Creature(source=instance.background_normal)
         self.add_widget(creature)
 
+    def delete(self):
+        self.remove_widget(selected)
+
 
 class Painter(Widget):
     pen_color = (1, 1, 1)
@@ -93,6 +95,9 @@ class Painter(Widget):
     redo_bank = []
 
     def on_touch_down(self, touch):
+        # if 'button' not in touch.profile:
+        #     return
+
         with self.canvas:
             touch.ud["line"] = Line(
                 points=(touch.x, touch.y), width=self.line_width)
@@ -114,9 +119,9 @@ class Painter(Widget):
         elif color == "Pink":
             self.pen_color = (0.8, 0, 0.8)
         elif color == "Eraser":
-            self.pen_color = (0, 0, 0, 0)
+            self.canvas.clear()
 
-        self.line_width = 3.0 if color != "Eraser" else 30.0
+        self.line_width = 3.0
 
         with self.canvas:
             Color(rgb=self.pen_color)
@@ -147,7 +152,7 @@ class MainApp(App):
 
 if __name__ == "__main__":
     os.environ['KIVY_WINDOW'] = 'egl_rpi'
-    Config.set('graphics', 'width', '1200')
-    Config.set('graphics', 'height', '600')
+    Config.set('graphics', 'width', '1350')
+    Config.set('graphics', 'height', '750')
 
     MainApp().run()
