@@ -6,19 +6,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Document</title>
+    <title>Adventure Time</title>
 </head>
 
 <body>
-    <canvas class="canvas" id="canvas"></canvas>
     <div class="nav">
-        <!-- We will be accessing the data-clr in JavaScript -->
         <div class="clr" data-clr="#000"></div>
         <div class="clr" data-clr="#EF626C"></div>
         <div class="clr" data-clr="#fdec03"></div>
         <div class="clr" data-clr="#24d102"></div>
         <div class="clr" data-clr="#fff"></div>
         <button class="clear">clear</button>
+    </div>
+
+    <canvas class="canvas" id="canvas"></canvas>
+
+    <div class="menus">
+        <button class="accordion" id="creatures">Creatures</button>
+        <div class="panel">
+            <p>Lorem ipsum...</p>
+        </div>
+        <button class="accordion" id="maps">Maps</button>
+        <div class="panel">
+            <p>Lorem ipsum...</p>
+        </div>
     </div>
 
     <script src="main.js"></script>
