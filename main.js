@@ -6,7 +6,8 @@ const ctx = canvas.getContext("2d")
 
 let prevX = null
 let prevY = null
-let draw = false
+let drawing = false
+let lines = [, ]
 ctx.lineWidth = 5
 
 // canvas.style.backgroundImage = "url('Assets/Maps/Black Peaks.jpg')"
@@ -24,23 +25,38 @@ clearBtn.addEventListener("click", () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 })
 
-window.addEventListener("mousedown", (e) => draw = true)
-window.addEventListener("mouseup", (e) => draw = false)
-window.addEventListener("mousemove", (e) => {
-    if(prevX == null || prevY == null || !draw){
-        prevX = e.clientX
-        prevY = e.clientY
-        return
-    }
-
-    let currentX = e.clientX
-    let currentY = e.clientY
-
+function drawstart(event) {
     ctx.beginPath()
-    ctx.moveTo(prevX, prevY)
-    ctx.lineTo(currentX, currentY)
-    ctx.stroke()
+    ctx.moveTo(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop)
+    drawing = false
+    lines[event.identifier] = {
+        x: event.pageX - canvas.offsetLeft,
+        y: event.pageY - canvas.offsetTop
+    }
+}
 
-    prevX = currentX
-    prevY = currentY
-})
+function drawend(event) {
+    if (drawing) return;
+    drawmove(event);
+    drawing = true;
+}
+
+function drawmove(event) {
+    if (drawing) return;
+    ctx.moveTo(lines[event.identifier].x, lines[event.identifier].y)
+    ctx.lineTo(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop);
+    ctx.stroke();
+    lines[event.identifier] = {
+        x: event.pageX - canvas.offsetLeft,
+        y: event.pageY - canvas.offsetTop
+    }
+}
+
+function preventDrag(event) {
+    event.preventDefault();
+    Array.from(event.touches).forEach(e => drawmove(e));
+}
+
+canvas.addEventListener("touchstart", (event) => Array.from(event.touches).forEach(e => drawstart(e)), false)
+canvas.addEventListener("touchend", (event) => Array.from(event.changedTouches).forEach(e => drawend(e)), false)
+canvas.addEventListener("touchmove", preventDrag, false)
