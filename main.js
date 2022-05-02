@@ -44,8 +44,8 @@ Array.from(document.getElementsByClassName("accordion")).forEach(acc => {
     while (panel != null && panel.classList.contains("panel")) {
         panel.children[0].addEventListener("click", function() {
             var image = new Image(300, 300);
-            image.src = window.getComputedStyle(this).backgroundImage.toString().slice(5, -2);
-            console.log(window.getComputedStyle(this).backgroundImage.toString().slice(5, -2));
+            image.src = window.getComputedStyle(this).backgroundImage.slice(5, -2);
+            console.log(window.getComputedStyle(this).backgroundImage.slice(5, -2));
             ctx.drawImage(image, 200, 100, 200, 200);
         });
 
