@@ -64,17 +64,24 @@ button {
     padding: .6em 1em;
     border-radius: 3px;
     background-size: 120px 120px;
+    background-color: #03bb56;
     color: #fff;
+}
+
+button.option {
     width: 120px;
     height: 120px;
+    background-color: #eee;
 }
 
 div.menus {
     position: fixed;
     top: 2px;
-    width: 160px;
+    width: 156px;
+    height: 90%;
     opacity: .3;
     transition: opacity .5s;
+    overflow-y: auto;
 }
 
 div.menus:hover {
@@ -101,6 +108,7 @@ div.menus:hover {
 
 .panel {
     padding: 0 18px;
+    margin-bottom: 5px;
     background-color: white;
     max-height: 0;
     overflow: hidden;

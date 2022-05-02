@@ -22,20 +22,25 @@ document.querySelector(".clear").addEventListener("click", () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 });
 // ---------- Button Init ---------- //
-
+  
 
 // ---------- Dropdown Init ---------- //
 Array.from(document.getElementsByClassName("accordion")).forEach(acc => {
     acc.addEventListener("click", function() {
-        var panel = this.nextElementSibling;
         this.classList.toggle("active");
+        var panel = this.nextElementSibling;
+  
+        while (panel != null && panel.classList.contains("panel")) {
+            if (panel.style.maxHeight)
+                panel.style.maxHeight = null;
+            else
+                panel.style.maxHeight = panel.scrollHeight + "px";
 
-        if (panel.style.maxHeight)
-            panel.style.maxHeight = null;
-        else
-            panel.style.maxHeight = panel.scrollHeight + "px";
-
+            panel = panel.nextElementSibling;
+        }
     });
+
+    // init buttons here using acc.foreach
 });
 // ---------- Dropdown Init ---------- //
 
