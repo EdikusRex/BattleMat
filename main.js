@@ -1,8 +1,6 @@
 const canvas = document.getElementById("canvas")
 const ctx = canvas.getContext("2d")
 
-let prevX = null
-let prevY = null
 let drawing = false
 let lines = [, ]
 
@@ -14,46 +12,43 @@ ctx.lineWidth = 5
 
 
 // ---------- Button Init ---------- //
-let clrs = document.querySelectorAll(".clr")
-clrs = Array.from(clrs)
-clrs.forEach(clr => {
+Array.from(document.querySelectorAll(".clr")).forEach(clr => {
     clr.addEventListener("click", () => {
         ctx.strokeStyle = clr.dataset.clr
     })
-})
+});
 
-let clearBtn = document.querySelector(".clear")
-clearBtn.addEventListener("click", () => {
+document.querySelector(".clear").addEventListener("click", () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 });
 // ---------- Button Init ---------- //
 
-// ---------- Dropdown Init ---------- //
-var acc = document.getElementsByClassName("accordion");
-var i;
 
-for (i = 0; i < acc.length; i++) {
-    acc[i].addEventListener("click", function() {
-        this.classList.toggle("active");
+// ---------- Dropdown Init ---------- //
+Array.from(document.getElementsByClassName("accordion")).forEach(acc => {
+    acc.addEventListener("click", function() {
         var panel = this.nextElementSibling;
-        if (panel.style.maxHeight) {
+        this.classList.toggle("active");
+
+        if (panel.style.maxHeight)
             panel.style.maxHeight = null;
-        } else {
+        else
             panel.style.maxHeight = panel.scrollHeight + "px";
-        }
+
     });
-}
+});
 // ---------- Dropdown Init ---------- //
 
 
+// ---------- Canvas Init ---------- //
 function drawstart(event) {
-    ctx.beginPath()
-    ctx.moveTo(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop)
-    drawing = true
+    ctx.beginPath();
+    ctx.moveTo(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop);
+    drawing = true;
     lines[event.identifier] = {
         x: event.pageX - canvas.offsetLeft,
         y: event.pageY - canvas.offsetTop
-    }
+    };
 }
 
 function drawend(event) {
@@ -64,13 +59,13 @@ function drawend(event) {
 
 function drawmove(event) {
     if (!drawing) return;
-    ctx.moveTo(lines[event.identifier].x, lines[event.identifier].y)
+    ctx.moveTo(lines[event.identifier].x, lines[event.identifier].y);
     ctx.lineTo(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop);
     ctx.stroke();
     lines[event.identifier] = {
         x: event.pageX - canvas.offsetLeft,
         y: event.pageY - canvas.offsetTop
-    }
+    };
 }
 
 function touchstart(event) { Array.from(event.touches).forEach(e => drawstart(e)) }
@@ -82,10 +77,11 @@ function touchmove(event) {
     Array.from(event.touches).forEach(e => drawmove(e));
 }
 
-canvas.addEventListener("touchstart", touchstart, false)
-canvas.addEventListener("touchend", touchend, false)
-canvas.addEventListener("touchmove", touchmove, false)
+canvas.addEventListener("touchstart", touchstart, false);
+canvas.addEventListener("touchend", touchend, false);
+canvas.addEventListener("touchmove", touchmove, false);
 
-canvas.addEventListener("mousedown", drawstart)
-canvas.addEventListener("mouseup", drawend)
-canvas.addEventListener("mousemove", drawmove)
+canvas.addEventListener("mousedown", drawstart);
+canvas.addEventListener("mouseup", drawend);
+canvas.addEventListener("mousemove", drawmove);
+// ---------- Canvas Init ---------- //
