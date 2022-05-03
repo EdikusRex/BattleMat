@@ -163,6 +163,7 @@ div.menus:hover {
     size: 300px 300px;
     background-size: 300px 300px;
     position: absolute;
+    display: flex;
     top: 25%;
     right: 50%;
     background-color: rgba(56, 56, 56, 0.6);

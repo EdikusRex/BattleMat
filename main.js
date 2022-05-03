@@ -31,16 +31,16 @@ document.getElementById("sizeSlider").oninput = function() {
         selected.height = this.value;
         selected.width = this.value;
     }
-}
+};
 // ---------- Button Init ---------- //
-  
+
 
 // ---------- Dropdown Init ---------- //
 Array.from(document.getElementsByClassName("accordion")).forEach(acc => {
     acc.addEventListener("click", function() {
         this.classList.toggle("active");
         var panel = this.nextElementSibling;
-  
+
         while (panel != null && panel.classList.contains("panel")) {
             if (panel.style.maxHeight)
                 panel.style.maxHeight = null;
@@ -57,13 +57,12 @@ Array.from(document.getElementsByClassName("accordion")).forEach(acc => {
             panel.children[0].addEventListener("click", createToken);
             panel = panel.nextElementSibling;
         }
-    }
-    else if (acc.id == "maps") {
+    } else if (acc.id == "maps") {
         var panel = acc.nextElementSibling;
         while (panel != null && panel.classList.contains("panel")) {
             panel.children[0].addEventListener("click", function() {
                 if (canvas.style.backgroundImage == window.getComputedStyle(this).backgroundImage)
-                    canvas.style.backgroundImage = 'none';
+                    canvas.style.backgroundImage = "url(Assets/blank_gray.png)";
                 else
                     canvas.style.backgroundImage = window.getComputedStyle(this).backgroundImage;
             });
@@ -76,37 +75,67 @@ function createToken() {
     var token = new Image(200, 200);
     token.src = window.getComputedStyle(this).backgroundImage.slice(5, -2);
     token.classList.add("token");
-
-    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     document.body.appendChild(token);
-    token.onmousedown = dragMouseDown;
 
-    function dragMouseDown(e) {
-        e = e || window.event;
-        e.preventDefault();
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        document.onmouseup = closeDragElement;
-        document.onmousemove = elementDrag;
+    var active = false;
+    var currentX;
+    var currentY;
+    var initialX;
+    var initialY;
+    var xOffset = 0;
+    var yOffset = 0;
 
-        selected = token;
-        document.getElementById("sizeSlider").value = token.width;
+    token.addEventListener("touchstart", tdragStart, false);
+    token.addEventListener("touchend", tdragEnd, false);
+    token.addEventListener("touchmove", tdrag, false);
+
+    token.addEventListener("mousedown", dragStart, false);
+    token.addEventListener("mouseup", dragEnd, false);
+    token.addEventListener("mousemove", drag, false);
+
+    function tdragStart(event) {
+        Array.from(event.touches).forEach(e => dragStart(e));
     }
 
-    function elementDrag(e) {
-        e = e || window.event;
-        e.preventDefault();
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        token.style.top = (token.offsetTop - pos2) + "px";
-        token.style.left = (token.offsetLeft - pos1) + "px";
+    function tdragEnd(event) {
+        Array.from(event.touches).forEach(e => dragEnd(e));
     }
 
-    function closeDragElement() {
-        document.onmouseup = null;
-        document.onmousemove = null;
+    function tdrag(event) {
+        event.preventDefault();
+        Array.from(event.touches).forEach(e => drag(e));
+    }
+
+    function dragStart(e) {
+        initialX = e.clientX - xOffset;
+        initialY = e.clientY - yOffset;
+
+        if (e.target === token) {
+            active = true;
+        }
+    }
+
+    function dragEnd(e) {
+        initialX = currentX;
+        initialY = currentY;
+
+        active = false;
+    }
+
+    function drag(e) {
+        if (active) {
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+
+            xOffset = currentX;
+            yOffset = currentY;
+
+            setTranslate(currentX, currentY, token);
+        }
+    }
+
+    function setTranslate(xPos, yPos, el) {
+        el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
     }
 }
 // ---------- Dropdown Init ---------- //
