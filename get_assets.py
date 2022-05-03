@@ -3,13 +3,8 @@ import os
 
 
 def add_option(soup, acc, path):
-    button_text = acc.string
-    acc.clear()
-    acc.string = button_text
-
     for item in os.listdir(path):
         item = item.replace("'", "\\'").replace(" ", "\ ")
-
         panel = soup.new_tag("div", attrs={"class": "panel"})
         option = soup.new_tag("button", attrs={
             "class": "option", "style": f"background-image: url({path}/{item})"})
@@ -22,6 +17,9 @@ def main():
     f = open("template.html")
     soup = BeautifulSoup(f, "html.parser")
     f.close()
+
+    for panel in soup.find_all(attrs={"class": "panel"}):
+        panel.extract()
 
     map_path = "Assets/Maps"
     creature_path = "Assets/Creatures"

@@ -1,14 +1,13 @@
-const canvas = document.getElementById("canvas")
-const ctx = canvas.getContext("2d")
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-let drawing = false
-let lines = [, ]
+let drawing = false;
+let lines = [, ];
+let selected = null;
 
-canvas.height = window.innerHeight
-canvas.width = window.innerWidth
-ctx.lineWidth = 5
-
-// canvas.style.backgroundImage = "url('Assets/Maps/Black Peaks.jpg')"
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+ctx.lineWidth = 5;
 
 
 // ---------- Button Init ---------- //
@@ -21,6 +20,18 @@ Array.from(document.querySelectorAll(".clr")).forEach(clr => {
 document.querySelector(".clear").addEventListener("click", () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 });
+
+document.querySelector(".del").addEventListener("click", () => {
+    if (selected)
+        selected.remove();
+});
+
+document.getElementById("sizeSlider").oninput = function() {
+    if (selected) {
+        selected.height = this.value;
+        selected.width = this.value;
+    }
+}
 // ---------- Button Init ---------- //
   
 
@@ -40,18 +51,64 @@ Array.from(document.getElementsByClassName("accordion")).forEach(acc => {
         }
     });
 
-    var panel = acc.nextElementSibling;
-    while (panel != null && panel.classList.contains("panel")) {
-        panel.children[0].addEventListener("click", function() {
-            var image = new Image(300, 300);
-            image.src = window.getComputedStyle(this).backgroundImage.slice(5, -2);
-            console.log(window.getComputedStyle(this).backgroundImage.slice(5, -2));
-            ctx.drawImage(image, 200, 100, 200, 200);
-        });
-
-        panel = panel.nextElementSibling;
+    if (acc.id == "creatures") {
+        var panel = acc.nextElementSibling;
+        while (panel != null && panel.classList.contains("panel")) {
+            panel.children[0].addEventListener("click", createToken);
+            panel = panel.nextElementSibling;
+        }
+    }
+    else if (acc.id == "maps") {
+        var panel = acc.nextElementSibling;
+        while (panel != null && panel.classList.contains("panel")) {
+            panel.children[0].addEventListener("click", function() {
+                if (canvas.style.backgroundImage == window.getComputedStyle(this).backgroundImage)
+                    canvas.style.backgroundImage = 'none';
+                else
+                    canvas.style.backgroundImage = window.getComputedStyle(this).backgroundImage;
+            });
+            panel = panel.nextElementSibling;
+        }
     }
 });
+
+function createToken() {
+    var token = new Image(200, 200);
+    token.src = window.getComputedStyle(this).backgroundImage.slice(5, -2);
+    token.classList.add("token");
+
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    document.body.appendChild(token);
+    token.onmousedown = dragMouseDown;
+
+    function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+
+        selected = token;
+        document.getElementById("sizeSlider").value = token.width;
+    }
+
+    function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        token.style.top = (token.offsetTop - pos2) + "px";
+        token.style.left = (token.offsetLeft - pos1) + "px";
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
+}
 // ---------- Dropdown Init ---------- //
 
 
