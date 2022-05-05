@@ -62,7 +62,7 @@ Array.from(document.getElementsByClassName("accordion")).forEach(acc => {
         while (panel != null && panel.classList.contains("panel")) {
             panel.children[0].addEventListener("click", function() {
                 if (canvas.style.backgroundImage == window.getComputedStyle(this).backgroundImage)
-                    canvas.style.backgroundImage = "url(Assets/blank_gray.png)";
+                    canvas.style.backgroundImage = "url(Assets/blank.png)";
                 else
                     canvas.style.backgroundImage = window.getComputedStyle(this).backgroundImage;
             });
