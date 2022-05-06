@@ -1,13 +1,18 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-let drawing = false;
+let drawing = 0;
 let lines = [, ];
+let drags = [, ];
 let selected = null;
+let uid_counter = 0;
 
+
+// ---------- Window Init ---------- //
 canvas.height = window.innerHeight;
 canvas.width = window.innerWidth;
 ctx.lineWidth = 5;
+// ---------- Window Init ---------- //
 
 
 // ---------- Button Init ---------- //
@@ -70,82 +75,62 @@ Array.from(document.getElementsByClassName("accordion")).forEach(acc => {
         }
     }
 });
+// ---------- Dropdown Init ---------- //
 
+
+// ---------- Token Init ---------- //
 function createToken() {
     var token = new Image(200, 200);
+    var uid = uid_counter++;
+
+    token.style.left = 300 + 'px';
+    token.style.top = 200 + 'px';
     token.src = window.getComputedStyle(this).backgroundImage.slice(5, -2);
     token.classList.add("token");
     document.body.appendChild(token);
 
-    var active = false;
-    var currentX;
-    var currentY;
-    var initialX;
-    var initialY;
-    var xOffset = 0;
-    var yOffset = 0;
-
     token.addEventListener("touchstart", tdragStart, false);
-    token.addEventListener("touchend", tdragEnd, false);
     token.addEventListener("touchmove", tdrag, false);
 
-    token.addEventListener("mousedown", dragStart, false);
-    token.addEventListener("mouseup", dragEnd, false);
-    token.addEventListener("mousemove", drag, false);
+    token.addEventListener("mousedown", dragStart);
+    token.addEventListener("mousemove", drag);
 
-    function tdragStart(event) {
-        Array.from(event.touches).forEach(e => dragStart(e));
-    }
-
-    function tdragEnd(event) {
-        Array.from(event.touches).forEach(e => dragEnd(e));
-    }
+    function tdragStart(event) { Array.from(event.touches).forEach(e => dragStart(e)) }
 
     function tdrag(event) {
         event.preventDefault();
         Array.from(event.touches).forEach(e => drag(e));
     }
 
-    function dragStart(e) {
-        initialX = e.clientX - xOffset;
-        initialY = e.clientY - yOffset;
+    function dragStart(event) {
+        drags[uid] = {
+            dx: event.clientX - token.style.left.slice(0, -2),
+            dy: event.clientY - token.style.top.slice(0, -2)
+        };
 
-        if (e.target === token) {
-            active = true;
-        }
+        if (event.target === token)
+            selected = token;
     }
 
-    function dragEnd(e) {
-        initialX = currentX;
-        initialY = currentY;
+    function drag(event) {
+        if (!(uid in drags && event.target === token)) return;
 
-        active = false;
-    }
+        var dx = event.clientX - drags[uid].dx;
+        var dy = event.clientY - drags[uid].dy;
 
-    function drag(e) {
-        if (active) {
-            currentX = e.clientX - initialX;
-            currentY = e.clientY - initialY;
-
-            xOffset = currentX;
-            yOffset = currentY;
-
-            setTranslate(currentX, currentY, token);
-        }
-    }
-
-    function setTranslate(xPos, yPos, el) {
-        el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+        token.style.left = dx + 'px';
+        token.style.top = dy + 'px';
     }
 }
-// ---------- Dropdown Init ---------- //
+// ---------- Token Init ---------- //
 
 
 // ---------- Canvas Init ---------- //
 function drawstart(event) {
     ctx.beginPath();
     ctx.moveTo(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop);
-    drawing = true;
+    drawing++;
+
     lines[event.identifier] = {
         x: event.pageX - canvas.offsetLeft,
         y: event.pageY - canvas.offsetTop
@@ -153,16 +138,19 @@ function drawstart(event) {
 }
 
 function drawend(event) {
-    if (!drawing) return;
-    drawmove(event);
-    drawing = false;
+    if (drawing == 0) return;
+
+    drawing--;
 }
 
 function drawmove(event) {
-    if (!drawing) return;
+    if (drawing == 0) return;
+    if (!(event.target === canvas)) return;
+
     ctx.moveTo(lines[event.identifier].x, lines[event.identifier].y);
     ctx.lineTo(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop);
     ctx.stroke();
+
     lines[event.identifier] = {
         x: event.pageX - canvas.offsetLeft,
         y: event.pageY - canvas.offsetTop
@@ -182,7 +170,7 @@ canvas.addEventListener("touchstart", touchstart, false);
 canvas.addEventListener("touchend", touchend, false);
 canvas.addEventListener("touchmove", touchmove, false);
 
-canvas.addEventListener("mousedown", drawstart);
-canvas.addEventListener("mouseup", drawend);
-canvas.addEventListener("mousemove", drawmove);
+// canvas.addEventListener("mousedown", drawstart);
+// canvas.addEventListener("mouseup", drawend);
+// canvas.addEventListener("mousemove", drawmove);
 // ---------- Canvas Init ---------- //
