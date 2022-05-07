@@ -2,6 +2,7 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 let drawing = 0;
+let mouse_dragging = false;
 let lines = [, ];
 let drags = [, ];
 let selected = null;
@@ -94,15 +95,16 @@ function createToken() {
 
     token.addEventListener("mousedown", dragStart);
     token.addEventListener("mousemove", drag);
+    token.addEventListener("mouseup", () => mouse_dragging = false);
 
     function tdragStart(event) { Array.from(event.touches).forEach(e => dragStart(e)) }
 
-    function tdrag(event) {
-        event.preventDefault();
-        Array.from(event.touches).forEach(e => drag(e));
-    }
+    function tdrag(event) { Array.from(event.touches).forEach(e => drag(e)) }
 
     function dragStart(event) {
+        if (event.type == "mousedown")
+            mouse_dragging = true;
+
         drags[uid] = {
             dx: event.clientX - token.style.left.slice(0, -2),
             dy: event.clientY - token.style.top.slice(0, -2)
@@ -114,6 +116,8 @@ function createToken() {
 
     function drag(event) {
         if (!(uid in drags && event.target === token)) return;
+        if (event.type == "mousemove" && !mouse_dragging) return;
+        event.preventDefault();
 
         var dx = event.clientX - drags[uid].dx;
         var dy = event.clientY - drags[uid].dy;
@@ -170,7 +174,7 @@ canvas.addEventListener("touchstart", touchstart, false);
 canvas.addEventListener("touchend", touchend, false);
 canvas.addEventListener("touchmove", touchmove, false);
 
-// canvas.addEventListener("mousedown", drawstart);
-// canvas.addEventListener("mouseup", drawend);
-// canvas.addEventListener("mousemove", drawmove);
+canvas.addEventListener("mousedown", drawstart);
+canvas.addEventListener("mouseup", drawend);
+canvas.addEventListener("mousemove", drawmove);
 // ---------- Canvas Init ---------- //
