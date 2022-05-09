@@ -184,7 +184,6 @@ div.menus:hover {
 
 .token {
     size: 300px 300px;
-    background-size: 300px 300px;
     position: absolute;
     display: flex;
     top: 25%;
