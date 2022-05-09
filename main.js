@@ -5,7 +5,7 @@ let drawing = 0;
 let mouse_dragging = false;
 let lines = [, ];
 let drags = [, ];
-let selected = null;
+let selected = [];
 let uid_counter = 0;
 
 
@@ -28,14 +28,21 @@ document.querySelector(".clear").addEventListener("click", () => {
 });
 
 document.querySelector(".del").addEventListener("click", () => {
-    if (selected)
-        selected.remove();
+    while (selected.length > 0) {
+        if (!selected[0])
+            selected.splice(0, 1);
+        else {
+            selected[0].remove();
+            selected.splice(0, 1);
+            break;
+        }
+    }
 });
 
 document.getElementById("sizeSlider").oninput = function() {
-    if (selected) {
-        selected.height = this.value;
-        selected.width = this.value;
+    if (selected.length > 0) {
+        selected[0].height = this.value;
+        selected[0].width = this.value;
     }
 };
 
@@ -100,6 +107,7 @@ function createToken(event) {
 
     token.classList.add("token");
     document.body.appendChild(token);
+    selected.splice(0, 0, token);
 
     token.addEventListener("touchstart", tdragStart, false);
     token.addEventListener("touchmove", tdrag, false);
@@ -126,7 +134,7 @@ function createToken(event) {
         };
 
         if (event.target === token) {
-            selected = token;
+            selected.splice(0, 0, token);
             document.getElementById("sizeSlider").value = token.height;
         }
     }
