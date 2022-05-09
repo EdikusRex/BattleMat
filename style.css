@@ -20,6 +20,7 @@
     justify-content: space-around;
     opacity: .3;
     transition: opacity .5s;
+    z-index: 999;
 }
 
 .nav:hover {
@@ -64,6 +65,7 @@
     top: 60px;
     left: 50%;
     transform: translateX(-50%);
+    z-index: 999;
 }
 
 .slider {
@@ -126,6 +128,7 @@ div.menus {
     opacity: .3;
     transition: opacity .5s;
     overflow-y: auto;
+    z-index: 999;
 }
 
 div.menus:hover {

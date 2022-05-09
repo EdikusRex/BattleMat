@@ -104,6 +104,7 @@ function createToken(event) {
     } else {
         token.style.left = 400 + 'px';
         token.style.top = 300 + 'px';
+        token.style.borderRadius = "50%";
         token.style.backgroundColor = "rgba(255, 255, 255, 0.3)";
         token.src = "Assets/aoe.png";
     }
