@@ -102,6 +102,7 @@ function createToken(event) {
     } else {
         token.style.left = 400 + 'px';
         token.style.top = 300 + 'px';
+        token.style.backgroundColor = "rgba(255, 255, 255, 0.3)";
         token.src = "Assets/aoe.png";
     }
 
@@ -134,7 +135,9 @@ function createToken(event) {
         };
 
         if (event.target === token) {
+            selected = selected.filter((x) => x != token);
             selected.splice(0, 0, token);
+            console.log(selected);
             document.getElementById("sizeSlider").value = token.height;
         }
     }
