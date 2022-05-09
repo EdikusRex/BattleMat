@@ -9,7 +9,7 @@
 }
 
 .nav {
-    width: 310px;
+    width: 350px;
     height: 50px;
     position: fixed;
     top: 0;
@@ -70,7 +70,7 @@
 
 .slider {
     -webkit-appearance: none;
-    width: 310px;
+    width: 350px;
     height: 15px;
     border-radius: 5px;
     background: #d3d3d3;

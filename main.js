@@ -2,6 +2,7 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 let drawing = 0;
+let erasing = 0;
 let mouse_dragging = false;
 let lines = [, ];
 let drags = [, ];
@@ -19,12 +20,18 @@ ctx.lineWidth = 5;
 // ---------- Button Init ---------- //
 Array.from(document.querySelectorAll(".clr")).forEach(clr => {
     clr.addEventListener("click", () => {
-        ctx.strokeStyle = clr.dataset.clr
+        ctx.strokeStyle = clr.dataset.clr;
+        erasing = false;
     })
 });
 
 document.querySelector(".clear").addEventListener("click", () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
+});
+
+document.querySelector(".erase").addEventListener("click", () => {
+    ctx.strokeStyle = document.querySelector(".erase").dataset.clr;
+    erasing = true;
 });
 
 document.querySelector(".del").addEventListener("click", () => {
@@ -81,7 +88,7 @@ Array.from(document.getElementsByClassName("accordion")).forEach(acc => {
         while (panel != null && panel.classList.contains("panel")) {
             panel.children[0].addEventListener("click", function() {
                 if (canvas.style.backgroundImage == window.getComputedStyle(this).backgroundImage)
-                    canvas.style.backgroundImage = "url(Assets/blank.png)";
+                    canvas.style.backgroundImage = "url(Assets/Misc/blank.png)";
                 else
                     canvas.style.backgroundImage = window.getComputedStyle(this).backgroundImage;
             });
@@ -106,7 +113,7 @@ function createToken(event) {
         token.style.top = 300 + 'px';
         token.style.borderRadius = "50%";
         token.style.backgroundColor = "rgba(255, 255, 255, 0.3)";
-        token.src = "Assets/aoe.png";
+        token.src = "Assets/Misc/aoe.png";
     }
 
     token.classList.add("token");
@@ -141,7 +148,6 @@ function createToken(event) {
         if (event.target === token) {
             selected = selected.filter((x) => x != token);
             selected.splice(0, 0, token);
-            console.log(selected);
             document.getElementById("sizeSlider").value = token.height;
         }
     }
@@ -164,7 +170,7 @@ function createToken(event) {
 
 
 // ---------- Canvas Init ---------- //
-canvas.style.backgroundImage = "url(Assets/blank.png)";
+canvas.style.backgroundImage = "url(Assets/Misc/blank.png)";
 
 function drawstart(event) {
     ctx.beginPath();
@@ -186,6 +192,9 @@ function drawend(event) {
 function drawmove(event) {
     if (drawing == 0) return;
     if (!(event.target === canvas)) return;
+
+    if (erasing)
+        ctx.clearRect(event.pageX - 40, event.pageY - 40, 80, 80);
 
     ctx.moveTo(lines[event.identifier].x, lines[event.identifier].y);
     ctx.lineTo(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop);
