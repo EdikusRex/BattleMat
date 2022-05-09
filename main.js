@@ -99,9 +99,13 @@ function createToken() {
 
     function tdragStart(event) { Array.from(event.touches).forEach(e => dragStart(e)) }
 
-    function tdrag(event) { Array.from(event.touches).forEach(e => drag(e)) }
+    function tdrag(event) {
+        event.preventDefault();
+        Array.from(event.touches).forEach(e => drag(e));
+    }
 
     function dragStart(event) {
+        if (!(event.target === token)) return;
         if (event.type == "mousedown")
             mouse_dragging = true;
 
@@ -110,14 +114,18 @@ function createToken() {
             dy: event.clientY - token.style.top.slice(0, -2)
         };
 
-        if (event.target === token)
+        if (event.target === token) {
             selected = token;
+            document.getElementById("sizeSlider").value = token.height;
+        }
     }
 
     function drag(event) {
         if (!(uid in drags && event.target === token)) return;
-        if (event.type == "mousemove" && !mouse_dragging) return;
-        event.preventDefault();
+        if (event.type == "mousemove") {
+            if (!mouse_dragging) return;
+            event.preventDefault();
+        }
 
         var dx = event.clientX - drags[uid].dx;
         var dy = event.clientY - drags[uid].dy;
@@ -130,6 +138,8 @@ function createToken() {
 
 
 // ---------- Canvas Init ---------- //
+canvas.style.backgroundImage = "url(Assets/blank.png)";
+
 function drawstart(event) {
     ctx.beginPath();
     ctx.moveTo(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop);
