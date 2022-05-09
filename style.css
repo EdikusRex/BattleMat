@@ -159,6 +159,29 @@ div.menus:hover {
     transition: max-height 0.2s ease-out;
 }
 
+.aoe {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 50;
+    text-align: left;
+    border: none;
+    outline: none;
+    transition: 0.4s;
+    text-align: center;
+    position: fixed;
+    top: 2px;
+    left: 170px;
+    opacity: .3;
+    transition: opacity .5s;
+}
+
+.aoe:hover {
+    background-color: #ccc;
+    opacity: 1;
+}
+
 .token {
     size: 300px 300px;
     background-size: 300px 300px;

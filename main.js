@@ -38,6 +38,10 @@ document.getElementById("sizeSlider").oninput = function() {
         selected.width = this.value;
     }
 };
+
+document.getElementById("aoe").onclick = function() {
+    createToken(null);
+};
 // ---------- Button Init ---------- //
 
 
@@ -80,13 +84,20 @@ Array.from(document.getElementsByClassName("accordion")).forEach(acc => {
 
 
 // ---------- Token Init ---------- //
-function createToken() {
+function createToken(event) {
     var token = new Image(200, 200);
     var uid = uid_counter++;
 
-    token.style.left = 300 + 'px';
-    token.style.top = 200 + 'px';
-    token.src = window.getComputedStyle(this).backgroundImage.slice(5, -2);
+    if (event) {
+        token.style.left = 300 + 'px';
+        token.style.top = 200 + 'px';
+        token.src = window.getComputedStyle(this).backgroundImage.slice(5, -2);
+    } else {
+        token.style.left = 400 + 'px';
+        token.style.top = 300 + 'px';
+        token.src = "Assets/aoe.png";
+    }
+
     token.classList.add("token");
     document.body.appendChild(token);
 
