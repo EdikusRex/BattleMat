@@ -34,6 +34,8 @@ document.querySelector(".del").addEventListener("click", () => {
         else {
             selected[0].remove();
             selected.splice(0, 1);
+            if (selected[0])
+                document.getElementById("sizeSlider").value = selected[0].height;
             break;
         }
     }
@@ -107,8 +109,9 @@ function createToken(event) {
     }
 
     token.classList.add("token");
-    document.body.appendChild(token);
     selected.splice(0, 0, token);
+    document.getElementById("sizeSlider").value = token.height;
+    document.body.appendChild(token);
 
     token.addEventListener("touchstart", tdragStart, false);
     token.addEventListener("touchmove", tdrag, false);
