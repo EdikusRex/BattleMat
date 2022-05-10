@@ -2,7 +2,7 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 let drawing = 0;
-let erasing = 0;
+let erasing = false;
 let mouse_dragging = false;
 let lines = [, ];
 let drags = [, ];
