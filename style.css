@@ -152,6 +152,14 @@ div.menus:hover {
     text-align: center;
 }
 
+#creatures {
+    margin: 5px, 0, 2px, 0;
+}
+
+#maps {
+    margin: 15px, 0, 2px, 0;
+}
+
 .active,
 .accordion:hover {
     background-color: #ccc;
@@ -159,7 +167,7 @@ div.menus:hover {
 
 .panel {
     padding: 0 18px;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
     background-color: #eee;
     max-height: 0;
     overflow: hidden;
