@@ -8,6 +8,7 @@ let lines = [, ];
 let drags = [, ];
 let selected = [];
 let uid_counter = 0;
+let z_counter = 0;
 
 
 // ---------- Window Init ---------- //
@@ -141,6 +142,12 @@ function createToken(event) {
         if (!(event.target === token)) return;
         if (event.type == "mousedown")
             mouse_dragging = true;
+
+        if (z_counter == 900) {
+            z_counter = 0;
+            Array.from(selected).reverse().forEach((x) => x.style.zIndex = z_counter++);
+        }
+        token.style.zIndex = z_counter++;
 
         drags[uid] = {
             dx: event.clientX - token.style.left.slice(0, -2),
