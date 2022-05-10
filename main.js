@@ -21,6 +21,7 @@ ctx.lineWidth = 5;
 Array.from(document.querySelectorAll(".clr")).forEach(clr => {
     clr.addEventListener("click", () => {
         ctx.strokeStyle = clr.dataset.clr;
+        canvas.style.cursor = "auto";
         erasing = false;
     })
 });
@@ -31,6 +32,7 @@ document.querySelector(".clear").addEventListener("click", () => {
 
 document.querySelector(".erase").addEventListener("click", () => {
     ctx.strokeStyle = document.querySelector(".erase").dataset.clr;
+    canvas.style.cursor = "url(\"Assets/Misc/square.png\") 40 40, auto";
     erasing = true;
 });
 
@@ -194,7 +196,7 @@ function drawmove(event) {
     if (!(event.target === canvas)) return;
 
     if (erasing)
-        ctx.clearRect(event.pageX - 40, event.pageY - 40, 80, 80);
+        ctx.clearRect(event.pageX - 35, event.pageY - 35, 70, 70);
 
     ctx.moveTo(lines[event.identifier].x, lines[event.identifier].y);
     ctx.lineTo(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop);
