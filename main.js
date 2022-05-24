@@ -3,6 +3,7 @@ const ctx = canvas.getContext("2d");
 
 let drawing = 0;
 let erasing = false;
+let tmap = false;
 let mouse_dragging = false;
 let lines = [, ];
 let drags = [, ];
@@ -21,9 +22,13 @@ ctx.lineWidth = 5;
 // ---------- Button Init ---------- //
 Array.from(document.querySelectorAll(".clr")).forEach(clr => {
     clr.addEventListener("click", () => {
-        ctx.strokeStyle = clr.dataset.clr;
+        ctx.strokeStyle = clr.style.backgroundColor;
         canvas.style.cursor = "auto";
         erasing = false;
+        endTmap();
+
+        if (document.querySelector(".erase").classList.contains("active"))
+            document.querySelector(".erase").classList.remove("active");
     })
 });
 
@@ -32,9 +37,13 @@ document.querySelector(".clear").addEventListener("click", () => {
 });
 
 document.querySelector(".erase").addEventListener("click", () => {
-    ctx.strokeStyle = document.querySelector(".erase").dataset.clr;
+    ctx.strokeStyle = "rgba(0,0,0,0)";
     canvas.style.cursor = "url(\"Assets/Misc/square.png\") 40 40, auto";
     erasing = true;
+    endTmap();
+
+    if (!document.querySelector(".erase").classList.contains("active"))
+        document.querySelector(".erase").classList.add("active");
 });
 
 document.querySelector(".del").addEventListener("click", () => {
@@ -51,8 +60,29 @@ document.querySelector(".del").addEventListener("click", () => {
     }
 });
 
+document.querySelector(".tmap").addEventListener("click", () => {
+    erasing = false;
+    canvas.style.cursor = "auto";
+    startTmap();
+    createToken(null, true);
+
+    if (canvas.style.backgroundSize)
+        document.getElementById("sizeSlider").value = canvas.style.backgroundSize.slice(0, -1);
+    else
+        document.getElementById("sizeSlider").value = 100;
+
+    if (document.querySelector(".erase").classList.contains("active"))
+        document.querySelector(".erase").classList.remove("active");
+});
+
 document.getElementById("sizeSlider").oninput = function() {
-    if (selected.length > 0) {
+    if (tmap) {
+        // canvas.style.backgroundSize = this.value + "%";
+        selected[0].height = canvas.height * this.value * 0.01;
+        selected[0].width = canvas.width * this.value * 0.01;
+
+        // canvas.style.backgroundPosition = this.value + "px " + this.value + "px";
+    } else if (selected.length > 0) {
         selected[0].height = this.value;
         selected[0].width = this.value;
     }
@@ -62,6 +92,23 @@ document.getElementById("aoe").onclick = function() {
     createToken(null);
 };
 // ---------- Button Init ---------- //
+
+
+// ---------- Transform Map Init ---------- //
+function startTmap() {
+    tmap = true;
+
+    if (!document.querySelector(".tmap").classList.contains("active"))
+        document.querySelector(".tmap").classList.add("active");
+}
+
+function endTmap() {
+    tmap = false;
+
+    if (document.querySelector(".tmap").classList.contains("active"))
+        document.querySelector(".tmap").classList.remove("active");
+}
+// ---------- Transform Map Init ---------- //
 
 
 // ---------- Dropdown Init ---------- //
@@ -103,11 +150,23 @@ Array.from(document.getElementsByClassName("accordion")).forEach(acc => {
 
 
 // ---------- Token Init ---------- //
-function createToken(event) {
+function createToken(event, map_create) {
     var token = new Image(200, 200);
     var uid = uid_counter++;
 
-    if (event) {
+    if (!map_create)
+        endTmap();
+
+    if (tmap) {
+        if (!canvas.style.backgroundSize)
+            canvas.style.backgroundSize = "100%";
+        token.width = canvas.width * canvas.style.backgroundSize.slice(0, -1) * 0.01;
+        token.height = canvas.height * canvas.style.backgroundSize.slice(0, -1) * 0.01;
+        token.src = canvas.style.backgroundImage.slice(5, -2);
+        token.style.left = "0px";
+        token.style.top = "0px";
+        token.classList.add("map_token");
+    } else if (event) {
         token.style.left = 300 + 'px';
         token.style.top = 200 + 'px';
         token.src = window.getComputedStyle(this).backgroundImage.slice(5, -2);
@@ -149,6 +208,11 @@ function createToken(event) {
         }
         token.style.zIndex = z_counter++;
 
+        if (!token.classList.contains("map_token"))
+            endTmap();
+        else
+            startTmap();
+
         drags[uid] = {
             dx: event.clientX - token.style.left.slice(0, -2),
             dy: event.clientY - token.style.top.slice(0, -2)
@@ -157,7 +221,10 @@ function createToken(event) {
         if (event.target === token) {
             selected = selected.filter((x) => x != token);
             selected.splice(0, 0, token);
-            document.getElementById("sizeSlider").value = token.height;
+            if (tmap)
+                document.getElementById("sizeSlider").value = Math.floor(token.height / canvas.height) * 100;
+            else
+                document.getElementById("sizeSlider").value = token.height;
         }
     }
 
@@ -182,6 +249,8 @@ function createToken(event) {
 canvas.style.backgroundImage = "url(Assets/Misc/blank.png)";
 
 function drawstart(event) {
+    if (event.type == "mousedown")
+        mouse_dragging = true;
     ctx.beginPath();
     ctx.moveTo(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop);
     drawing++;
@@ -195,12 +264,15 @@ function drawstart(event) {
 function drawend(event) {
     if (drawing == 0) return;
 
+    mouse_dragging = false;
     drawing--;
 }
 
 function drawmove(event) {
     if (drawing == 0) return;
     if (!(event.target === canvas)) return;
+    if (event.type == "mousemove")
+        if (!mouse_dragging) return;
 
     if (erasing)
         ctx.clearRect(event.pageX - 35, event.pageY - 35, 70, 70);

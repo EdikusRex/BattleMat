@@ -10,10 +10,11 @@ body {
 .canvas {
     background-size: 100% 100%;
     background-color: #444;
+    background-repeat: no-repeat;
 }
 
 .nav {
-    width: 350px;
+    width: 400px;
     height: 50px;
     position: fixed;
     top: 0;
@@ -44,24 +45,26 @@ body {
     transform: scale(1.2);
 }
 
-.clr:nth-child(1) {
-    background-color: #000;
+button {
+    border: none;
+    outline: none;
+    padding: .6em 1em;
+    border-radius: 3px;
+    background-size: 120px 120px;
+    background-color: #03bb56;
+    color: #fff;
 }
 
-.clr:nth-child(2) {
-    background-color: #EF626C;
+button.option {
+    cursor: pointer;
+    width: 120px;
+    height: 120px;
+    background-color: #eee;
 }
 
-.clr:nth-child(3) {
-    background-color: #fdec03;
-}
-
-.clr:nth-child(4) {
+.tmap.active,
+.erase.active {
     background-color: #24d102;
-}
-
-.clr:nth-child(5) {
-    background-color: #fff;
 }
 
 .slidecontainer {
@@ -74,7 +77,7 @@ body {
 
 .slider {
     -webkit-appearance: none;
-    width: 350px;
+    width: 400px;
     height: 15px;
     border-radius: 5px;
     background: #d3d3d3;
@@ -104,23 +107,6 @@ body {
     border-radius: 50%;
     background: #04AA6D;
     cursor: pointer;
-}
-
-button {
-    border: none;
-    outline: none;
-    padding: .6em 1em;
-    border-radius: 3px;
-    background-size: 120px 120px;
-    background-color: #03bb56;
-    color: #fff;
-}
-
-button.option {
-    cursor: pointer;
-    width: 120px;
-    height: 120px;
-    background-color: #eee;
 }
 
 div.menus {
@@ -190,6 +176,7 @@ div.menus:hover {
     left: 170px;
     opacity: .3;
     transition: opacity .5s;
+    z-index: 999;
 }
 
 .aoe:hover {
