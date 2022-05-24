@@ -58,26 +58,33 @@ document.querySelector(".del").addEventListener("click", () => {
             break;
         }
     }
+    if (tmap) {
+        canvas.style.backgroundSize = "100% 100%";
+        canvas.style.backgroundPosition = "0px 0px";
+        endTmap();
+    }
 });
 
 document.querySelector(".tmap").addEventListener("click", () => {
-    erasing = false;
+    if (!tmap && canvas.style.backgroundImage == "url(\"Assets/Misc/blank.png\")") return;
+
     canvas.style.cursor = "auto";
-    startTmap();
-    createToken(null, true);
+    if (tmap)
+        endTmap();
+    else {
+        startTmap();
+        createToken(null, true);
+    }
 
     if (canvas.style.backgroundSize)
-        document.getElementById("sizeSlider").value = canvas.style.backgroundSize.slice(0, -1);
+        document.getElementById("sizeSlider").value = canvas.style.backgroundSize.split("%")[0];
     else
         document.getElementById("sizeSlider").value = 100;
-
-    if (document.querySelector(".erase").classList.contains("active"))
-        document.querySelector(".erase").classList.remove("active");
 });
 
 document.getElementById("sizeSlider").oninput = function() {
     if (tmap) {
-        // canvas.style.backgroundSize = this.value + "%";
+        canvas.style.backgroundSize = this.value + "%";
         selected[0].height = canvas.height * this.value * 0.01;
         selected[0].width = canvas.width * this.value * 0.01;
 
@@ -94,12 +101,16 @@ document.getElementById("aoe").onclick = function() {
 // ---------- Button Init ---------- //
 
 
-// ---------- Transform Map Init ---------- //
+// ---------- Transform Map ---------- //
 function startTmap() {
     tmap = true;
+    erasing = false;
 
     if (!document.querySelector(".tmap").classList.contains("active"))
         document.querySelector(".tmap").classList.add("active");
+
+    if (document.querySelector(".erase").classList.contains("active"))
+        document.querySelector(".erase").classList.remove("active");
 }
 
 function endTmap() {
@@ -107,8 +118,17 @@ function endTmap() {
 
     if (document.querySelector(".tmap").classList.contains("active"))
         document.querySelector(".tmap").classList.remove("active");
+
+    var map_tok = document.querySelector(".map_token");
+    if (map_tok) {
+        canvas.style.backgroundImage = "url(" + map_tok.src + ")";
+        canvas.style.backgroundPosition = map_tok.style.left + " " + map_tok.style.top;
+        canvas.style.backgroundSize = document.getElementById("sizeSlider").value + "% " +
+            document.getElementById("sizeSlider").value + "%";
+        map_tok.remove();
+    }
 }
-// ---------- Transform Map Init ---------- //
+// ---------- Transform Map ---------- //
 
 
 // ---------- Dropdown Init ---------- //
@@ -159,13 +179,24 @@ function createToken(event, map_create) {
 
     if (tmap) {
         if (!canvas.style.backgroundSize)
-            canvas.style.backgroundSize = "100%";
-        token.width = canvas.width * canvas.style.backgroundSize.slice(0, -1) * 0.01;
-        token.height = canvas.height * canvas.style.backgroundSize.slice(0, -1) * 0.01;
+            canvas.style.backgroundSize = "100% 100%";
+        token.width = canvas.width * canvas.style.backgroundSize.split("%")[0] * 0.01;
+        token.height = canvas.height * canvas.style.backgroundSize.split("%")[1].slice(1) * 0.01;
+
         token.src = canvas.style.backgroundImage.slice(5, -2);
-        token.style.left = "0px";
-        token.style.top = "0px";
+
+        if (canvas.style.backgroundPosition) {
+            token.style.left = canvas.style.backgroundPosition.split(" ")[0];
+            token.style.top = canvas.style.backgroundPosition.split(" ")[1];
+        } else {
+            token.style.left = "0px";
+            token.style.top = "0px";
+        }
+        token.style.opacity = 0.4;
+        token.style.zIndex = 998;
         token.classList.add("map_token");
+
+        canvas.style.backgroundImage = "url(Assets/Misc/blank.png)";
     } else if (event) {
         token.style.left = 300 + 'px';
         token.style.top = 200 + 'px';
@@ -222,7 +253,8 @@ function createToken(event, map_create) {
             selected = selected.filter((x) => x != token);
             selected.splice(0, 0, token);
             if (tmap)
-                document.getElementById("sizeSlider").value = Math.floor(token.height / canvas.height) * 100;
+                document.getElementById("sizeSlider").value = canvas.style.backgroundSize.split("%")[0];
+            // FIX THIS ^^
             else
                 document.getElementById("sizeSlider").value = token.height;
         }
