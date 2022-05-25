@@ -95,6 +95,12 @@ document.getElementById("sizeSlider").oninput = function() {
     }
 };
 
+document.getElementById("rotateSlider").oninput = function() {
+    if (tmap || selected.length == 0) return;
+
+    selected[0].style.transform = "rotate(" + this.value + "deg)";
+};
+
 document.getElementById("aoe").onclick = function() {
     createToken(null);
 };
@@ -254,9 +260,14 @@ function createToken(event, map_create) {
             selected.splice(0, 0, token);
             if (tmap)
                 document.getElementById("sizeSlider").value = canvas.style.backgroundSize.split("%")[0];
-            // FIX THIS ^^
-            else
+            else {
                 document.getElementById("sizeSlider").value = token.height;
+
+                if (token.style.transform)
+                    document.getElementById("rotateSlider").value = token.style.transform.slice(7, -4);
+                else
+                    document.getElementById("rotateSlider").value = 0;
+            }
         }
     }
 

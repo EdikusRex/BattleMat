@@ -67,6 +67,14 @@ button.option {
     background-color: #24d102;
 }
 
+.rotateslider {
+    position: fixed;
+    top: 95px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+}
+
 .slidecontainer {
     position: fixed;
     top: 60px;
@@ -85,6 +93,10 @@ button.option {
     opacity: 0.7;
     -webkit-transition: .2s;
     transition: opacity .2s;
+}
+
+.rotator {
+    width: 200px;
 }
 
 .slider:hover {
