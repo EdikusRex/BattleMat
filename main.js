@@ -271,7 +271,7 @@ function createToken(event, map_create) {
                 document.getElementById("sizeSlider").value = token.height;
 
                 if (token.style.transform)
-                    document.getElementById("rotateSlider").value = token.style.transform.slice(7, -4);
+                    document.getElementById("rotateSlider").value = token.style.transform.split(" ")[1].slice(7, -4);
                 else
                     document.getElementById("rotateSlider").value = 0;
             }
