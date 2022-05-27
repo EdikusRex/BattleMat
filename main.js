@@ -11,6 +11,8 @@ let selected = [];
 let uid_counter = 0;
 let z_counter = 0;
 
+let scale_start = document.getElementById("sizeSlider").value;
+
 
 // ---------- Window Init ---------- //
 canvas.height = window.innerHeight;
@@ -82,23 +84,27 @@ document.querySelector(".tmap").addEventListener("click", () => {
         document.getElementById("sizeSlider").value = 100;
 });
 
+// Transform: scale() rotate()
+// transform.split(' ')
 document.getElementById("sizeSlider").oninput = function() {
     if (tmap) {
         canvas.style.backgroundSize = this.value + "%";
         selected[0].height = canvas.height * this.value * 0.01;
         selected[0].width = canvas.width * this.value * 0.01;
-
-        // canvas.style.backgroundPosition = this.value + "px " + this.value + "px";
     } else if (selected.length > 0) {
-        selected[0].height = this.value;
-        selected[0].width = this.value;
+        var scale = this.value / scale_start;
+        var maintain = selected[0].style.transform.split(" ")[1];
+
+        selected[0].style.transform = "scale(" + scale + ")" + maintain;
     }
 };
 
 document.getElementById("rotateSlider").oninput = function() {
     if (tmap || selected.length == 0) return;
 
-    selected[0].style.transform = "rotate(" + this.value + "deg)";
+    var maintain = selected[0].style.transform.split(" ")[0];
+
+    selected[0].style.transform = maintain + "rotate(" + this.value + "deg)";
 };
 
 document.getElementById("aoe").onclick = function() {
@@ -214,6 +220,7 @@ function createToken(event, map_create) {
         token.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
         token.src = "Assets/Misc/aoe.png";
     }
+    token.style.transform = "scale(1) rotate(0)";
 
     token.classList.add("token");
     selected.splice(0, 0, token);

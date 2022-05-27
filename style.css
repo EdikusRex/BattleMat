@@ -177,7 +177,7 @@ div.menus:hover {
     color: #444;
     cursor: pointer;
     padding: 18px;
-    width: 50;
+    width: 100px;
     text-align: left;
     border: none;
     outline: none;
@@ -203,4 +203,5 @@ div.menus:hover {
     top: 25%;
     right: 50%;
     background-color: rgba(56, 56, 56, 0.5);
+    transform-origin: center;
 }
