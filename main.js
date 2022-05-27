@@ -268,7 +268,7 @@ function createToken(event, map_create) {
             if (tmap)
                 document.getElementById("sizeSlider").value = canvas.style.backgroundSize.split("%")[0];
             else {
-                document.getElementById("sizeSlider").value = token.height;
+                document.getElementById("sizeSlider").value = token.style.transform.split(" ")[0].slice(6, -1) * scale_start;
 
                 if (token.style.transform)
                     document.getElementById("rotateSlider").value = token.style.transform.split(" ")[1].slice(7, -4);
