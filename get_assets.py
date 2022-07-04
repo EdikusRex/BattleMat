@@ -18,8 +18,8 @@ def main():
     soup = BeautifulSoup(f, "html.parser")
     f.close()
 
-    for panel in soup.find_all(attrs={"class": "panel"}):
-        panel.extract()
+    # for panel in soup.find_all(attrs={"class": "panel"}):
+    #     panel.extract()
 
     map_path = "Assets/Maps"
     creature_path = "Assets/Creatures"
