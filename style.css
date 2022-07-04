@@ -53,6 +53,7 @@ button {
     background-size: 120px 120px;
     background-color: #03bb56;
     color: #fff;
+    user-select: none;
 }
 
 button.option {
