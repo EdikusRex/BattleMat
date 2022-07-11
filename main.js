@@ -105,10 +105,6 @@ document.getElementById("rotateSlider").oninput = function() {
 
     selected[0].style.transform = maintain + "rotate(" + this.value + "deg)";
 };
-
-document.getElementById("aoe").onclick = function() {
-    createToken(null);
-};
 // ---------- Button Init ---------- //
 
 
@@ -173,6 +169,12 @@ Array.from(document.getElementsByClassName("accordion")).forEach(acc => {
                 else
                     canvas.style.backgroundImage = window.getComputedStyle(this).backgroundImage;
             });
+            panel = panel.nextElementSibling;
+        }
+    } else if (acc.id == "aoe") {
+        var panel = acc.nextElementSibling;
+        while (panel != null && panel.classList.contains("panel")) {
+            panel.children[0].addEventListener("click", createToken);
             panel = panel.nextElementSibling;
         }
     }

@@ -24,17 +24,22 @@ def main():
     # for panel in soup.find_all(attrs={"class": "panel"}):
     #     panel.extract()
 
-    map_path = "Assets/Maps"
     creature_path = "Assets/Creatures"
     player_path = "Assets/Creatures/Players"
-    grid_path = "Assets/Maps/Grid"
     creatures = soup.find(id="creatures")
+
+    map_path = "Assets/Maps"
+    grid_path = "Assets/Maps/Grid"
     maps = soup.find(id="maps")
+
+    aoe_path = "Assets/Misc/AoE"
+    aoe = soup.find(id="aoe")
 
     add_option(soup, creatures, creature_path)
     add_option(soup, creatures, player_path)
     add_option(soup, maps, map_path)
     add_option(soup, maps, grid_path)
+    add_option(soup, aoe, aoe_path)
 
     f = open("index.html", "w")
     f.write(soup.prettify())
