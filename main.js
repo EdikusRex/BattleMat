@@ -308,6 +308,9 @@ function drawstart(event) {
         x: event.pageX - canvas.offsetLeft,
         y: event.pageY - canvas.offsetTop
     };
+
+    ctx.lineTo(event.pageX - canvas.offsetLeft - 5, event.pageY - canvas.offsetTop + 5);
+    ctx.stroke();
 }
 
 function drawend(event) {
