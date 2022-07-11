@@ -11,7 +11,7 @@ let selected = [];
 let uid_counter = 0;
 let z_counter = 0;
 
-let scale_start = document.getElementById("sizeSlider").value;
+let scale_start = 40;
 
 
 // ---------- Window Init ---------- //
@@ -84,8 +84,7 @@ document.querySelector(".tmap").addEventListener("click", () => {
         document.getElementById("sizeSlider").value = 100;
 });
 
-// Transform: scale() rotate()
-// transform.split(' ')
+document.getElementById("sizeSlider").value = scale_start;
 document.getElementById("sizeSlider").oninput = function() {
     if (tmap) {
         canvas.style.backgroundSize = this.value + "%";
@@ -183,7 +182,7 @@ Array.from(document.getElementsByClassName("accordion")).forEach(acc => {
 
 // ---------- Token Init ---------- //
 function createToken(event, map_create) {
-    var token = new Image(200, 200);
+    var token = new Image(scale_start, scale_start);
     var uid = uid_counter++;
 
     if (!map_create)
