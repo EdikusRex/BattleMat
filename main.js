@@ -11,7 +11,7 @@ let selected = [];
 let uid_counter = 0;
 let z_counter = 0;
 
-let scale_start = 40;
+let scale_start = 80;
 
 
 // ---------- Window Init ---------- //
