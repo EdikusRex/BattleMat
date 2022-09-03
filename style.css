@@ -14,12 +14,11 @@ body {
 }
 
 .nav {
-    width: 600px;
+    width: 680px;
     height: 50px;
     position: fixed;
     top: 2%;
-    left: 78%;
-    transform: translateX(-50%);
+    right: 5px;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -77,23 +76,22 @@ button.opt {
 }
 
 .tmap.active,
-.erase.active {
+.erase.active,
+.sel.active {
     background-color: #5ae63f;
 }
 
 .rotateslider {
     position: fixed;
     top: 150px;
-    left: 78%;
-    transform: translateX(-50%);
+    right: 150px;
     z-index: 999;
 }
 
 .slidecontainer {
     position: fixed;
     top: 75px;
-    left: 78%;
-    transform: translateX(-50%);
+    right: 50px;
     z-index: 999;
 }
 
@@ -133,6 +131,10 @@ button.opt {
     border-radius: 50%;
     background: #04AA6D;
     cursor: pointer;
+}
+
+.hidden {
+    display: none;
 }
 
 div.menus {
@@ -195,4 +197,8 @@ div.menus:hover {
     right: 50%;
     background-color: rgba(56, 56, 56, 0.5);
     transform-origin: center;
+}
+
+.selected {
+    border: 10px solid rgb(240, 230, 140);
 }

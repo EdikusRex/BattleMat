@@ -3,6 +3,7 @@ const ctx = canvas.getContext("2d");
 
 let drawing = 0;
 let erasing = false;
+let selecting = false;
 let tmap = false;
 let mouse_dragging = false;
 let lines = [, ];
@@ -35,7 +36,12 @@ Array.from(document.querySelectorAll(".clr")).forEach(clr => {
 });
 
 document.querySelector(".clear").addEventListener("click", () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    if (!selecting)
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+    else if (selected.length > 0) {
+        selected[0].classList.remove("selected");
+        selected.splice(0, 1);
+    }
 });
 
 document.querySelector(".erase").addEventListener("click", () => {
@@ -43,21 +49,19 @@ document.querySelector(".erase").addEventListener("click", () => {
     canvas.style.cursor = "url(\"Assets/Misc/square.png\") 40 40, auto";
     erasing = true;
     endTmap();
+    endSel();
 
     if (!document.querySelector(".erase").classList.contains("active"))
         document.querySelector(".erase").classList.add("active");
 });
 
 document.querySelector(".del").addEventListener("click", () => {
-    while (selected.length > 0) {
+    while (selecting && selected.length > 0) {
         if (!selected[0])
             selected.splice(0, 1);
         else {
             selected[0].remove();
             selected.splice(0, 1);
-            if (selected[0])
-                document.getElementById("sizeSlider").value = selected[0].height;
-            break;
         }
     }
     if (tmap) {
@@ -84,6 +88,45 @@ document.querySelector(".tmap").addEventListener("click", () => {
         document.getElementById("sizeSlider").value = 100;
 });
 
+function endSel() {
+    Array.from(selected).forEach((x) => x.classList.remove("selected"));
+    selected = [];
+    selecting = false;
+
+    if (document.querySelector(".sel").classList.contains("active"))
+        document.querySelector(".sel").classList.remove("active");
+
+    if (!document.querySelector(".slidecontainer").classList.contains("hidden"))
+        document.querySelector(".slidecontainer").classList.add("hidden");
+    if (!document.querySelector(".rotateslider").classList.contains("hidden"))
+        document.querySelector(".rotateslider").classList.add("hidden");
+}
+
+document.querySelector(".slidecontainer").classList.add("hidden");
+document.querySelector(".rotateslider").classList.add("hidden");
+document.querySelector(".sel").addEventListener("click", () => {
+    if (selecting) {
+        endSel();
+    } else {
+        selecting = true;
+        Array.from(selected).forEach((x) => x.classList.add("selected"));
+
+        if (!document.querySelector(".sel").classList.contains("active"))
+            document.querySelector(".sel").classList.add("active");
+
+        if (document.querySelector(".slidecontainer").classList.contains("hidden"))
+            document.querySelector(".slidecontainer").classList.remove("hidden");
+        if (document.querySelector(".rotateslider").classList.contains("hidden"))
+            document.querySelector(".rotateslider").classList.remove("hidden");
+
+        endTmap();
+        erasing = false;
+        canvas.style.cursor = "auto";
+        if (document.querySelector(".erase").classList.contains("active"))
+            document.querySelector(".erase").classList.remove("active");
+    }
+});
+
 document.getElementById("sizeSlider").value = scale_start;
 document.getElementById("sizeSlider").oninput = function() {
     if (tmap) {
@@ -91,19 +134,22 @@ document.getElementById("sizeSlider").oninput = function() {
         selected[0].height = canvas.height * this.value * 0.01;
         selected[0].width = canvas.width * this.value * 0.01;
     } else if (selected.length > 0) {
-        var scale = this.value / scale_start;
-        var maintain = selected[0].style.transform.split(" ")[1];
+        Array.from(selected).forEach((x) => {
+            var scale = this.value / scale_start;
+            var maintain = x.style.transform.split(" ")[1];
 
-        selected[0].style.transform = "scale(" + scale + ")" + maintain;
+            x.style.transform = "scale(" + scale + ")" + maintain;
+        });
     }
 };
 
 document.getElementById("rotateSlider").oninput = function() {
     if (tmap || selected.length == 0) return;
 
-    var maintain = selected[0].style.transform.split(" ")[0];
-
-    selected[0].style.transform = maintain + "rotate(" + this.value + "deg)";
+    Array.from(selected).forEach((x) => {
+        var maintain = x.style.transform.split(" ")[0];
+        x.style.transform = maintain + "rotate(" + this.value + "deg)";
+    });
 };
 // ---------- Button Init ---------- //
 
@@ -112,6 +158,7 @@ document.getElementById("rotateSlider").oninput = function() {
 function startTmap() {
     tmap = true;
     erasing = false;
+    endSel();
 
     if (!document.querySelector(".tmap").classList.contains("active"))
         document.querySelector(".tmap").classList.add("active");
@@ -224,7 +271,10 @@ function createToken(event, map_create) {
     token.style.transform = "scale(1) rotate(0)";
 
     token.classList.add("token");
-    selected.splice(0, 0, token);
+    if (selecting) {
+        token.classList.add("selected");
+        selected.splice(0, 0, token);
+    }
     document.getElementById("sizeSlider").value = token.height;
     document.body.appendChild(token);
 
@@ -264,8 +314,12 @@ function createToken(event, map_create) {
         };
 
         if (event.target === token) {
-            selected = selected.filter((x) => x != token);
-            selected.splice(0, 0, token);
+            if (selecting) {
+                selected = selected.filter((x) => x != token);
+                selected.splice(0, 0, token);
+                if (!token.classList.contains("selected"))
+                    token.classList.add("selected");
+            }
             if (tmap)
                 document.getElementById("sizeSlider").value = canvas.style.backgroundSize.split("%")[0];
             else {
