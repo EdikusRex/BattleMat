@@ -83,7 +83,7 @@ button.opt {
 
 .rotateslider {
     position: fixed;
-    top: 135px;
+    top: 150px;
     left: 78%;
     transform: translateX(-50%);
     z-index: 999;
@@ -91,7 +91,7 @@ button.opt {
 
 .slidecontainer {
     position: fixed;
-    top: 90px;
+    top: 75px;
     left: 78%;
     transform: translateX(-50%);
     z-index: 999;
@@ -100,8 +100,8 @@ button.opt {
 .slider {
     -webkit-appearance: none;
     width: 400px;
-    height: 20px;
-    border-radius: 5px;
+    height: 65px;
+    border-radius: 50px;
     background: #d3d3d3;
     outline: none;
     opacity: 0.7;
@@ -120,16 +120,16 @@ button.opt {
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 35px;
-    height: 35px;
+    width: 65px;
+    height: 65px;
     border-radius: 50%;
     background: #04AA6D;
     cursor: pointer;
 }
 
 .slider::-moz-range-thumb {
-    width: 25px;
-    height: 25px;
+    width: 65px;
+    height: 65px;
     border-radius: 50%;
     background: #04AA6D;
     cursor: pointer;
