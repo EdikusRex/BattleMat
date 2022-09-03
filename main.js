@@ -111,9 +111,9 @@ document.querySelector(".sel").addEventListener("click", () => {
     if (selecting) {
         endSel();
     } else {
+        endTmap();
         selecting = true;
         Array.from(selected).forEach((x) => x.classList.add("selected"));
-        endTmap();
         erasing = false;
         canvas.style.cursor = "auto";
 
@@ -176,11 +176,13 @@ function startTmap() {
 function endTmap() {
     tmap = false;
 
-    if (!document.querySelector(".slidecontainer").classList.contains("hidden"))
-        document.querySelector(".slidecontainer").classList.add("hidden");
-
     if (document.querySelector(".tmap").classList.contains("active"))
         document.querySelector(".tmap").classList.remove("active");
+
+    if (selecting) return;
+
+    if (!document.querySelector(".slidecontainer").classList.contains("hidden"))
+        document.querySelector(".slidecontainer").classList.add("hidden");
 
     if (map_tok) {
         canvas.style.backgroundImage = "url(" + map_tok.src + ")";
