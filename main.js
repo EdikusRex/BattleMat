@@ -5,6 +5,7 @@ let drawing = 0;
 let erasing = false;
 let selecting = false;
 let tmap = false;
+let map_tok = null;
 let mouse_dragging = false;
 let lines = [, ];
 let drags = [, ];
@@ -67,6 +68,8 @@ document.querySelector(".del").addEventListener("click", () => {
     if (tmap) {
         canvas.style.backgroundSize = "100% 100%";
         canvas.style.backgroundPosition = "0px 0px";
+        map_tok.remove();
+        map_tok = null;
         endTmap();
     }
 });
@@ -110,6 +113,9 @@ document.querySelector(".sel").addEventListener("click", () => {
     } else {
         selecting = true;
         Array.from(selected).forEach((x) => x.classList.add("selected"));
+        endTmap();
+        erasing = false;
+        canvas.style.cursor = "auto";
 
         if (!document.querySelector(".sel").classList.contains("active"))
             document.querySelector(".sel").classList.add("active");
@@ -119,9 +125,6 @@ document.querySelector(".sel").addEventListener("click", () => {
         if (document.querySelector(".rotateslider").classList.contains("hidden"))
             document.querySelector(".rotateslider").classList.remove("hidden");
 
-        endTmap();
-        erasing = false;
-        canvas.style.cursor = "auto";
         if (document.querySelector(".erase").classList.contains("active"))
             document.querySelector(".erase").classList.remove("active");
     }
@@ -131,8 +134,8 @@ document.getElementById("sizeSlider").value = scale_start;
 document.getElementById("sizeSlider").oninput = function() {
     if (tmap) {
         canvas.style.backgroundSize = this.value + "%";
-        selected[0].height = canvas.height * this.value * 0.01;
-        selected[0].width = canvas.width * this.value * 0.01;
+        map_tok.height = canvas.height * this.value * 0.01;
+        map_tok.width = canvas.width * this.value * 0.01;
     } else if (selected.length > 0) {
         Array.from(selected).forEach((x) => {
             var scale = this.value / scale_start;
@@ -160,6 +163,9 @@ function startTmap() {
     erasing = false;
     endSel();
 
+    if (document.querySelector(".slidecontainer").classList.contains("hidden"))
+        document.querySelector(".slidecontainer").classList.remove("hidden");
+
     if (!document.querySelector(".tmap").classList.contains("active"))
         document.querySelector(".tmap").classList.add("active");
 
@@ -170,10 +176,12 @@ function startTmap() {
 function endTmap() {
     tmap = false;
 
+    if (!document.querySelector(".slidecontainer").classList.contains("hidden"))
+        document.querySelector(".slidecontainer").classList.add("hidden");
+
     if (document.querySelector(".tmap").classList.contains("active"))
         document.querySelector(".tmap").classList.remove("active");
 
-    var map_tok = document.querySelector(".map_token");
     if (map_tok) {
         canvas.style.backgroundImage = "url(" + map_tok.src + ")";
         canvas.style.backgroundPosition = map_tok.style.left + " " + map_tok.style.top;
@@ -255,6 +263,7 @@ function createToken(event, map_create) {
         token.style.opacity = 0.4;
         token.style.zIndex = 998;
         token.classList.add("map_token");
+        map_tok = token;
 
         canvas.style.backgroundImage = "url(Assets/Misc/blank.png)";
     } else if (event) {
