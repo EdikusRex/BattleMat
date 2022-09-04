@@ -2,4 +2,5 @@
 
 ## Running the App
 * Run ```python3 src/get_assets.py``` from the 'BattleMat' directory
-* Run index.html - I've been using debug mode in vsc to do this. Dont know how to start it in command line lmao.
+* Run ```start src/html/index.html```
+    * You can also launch directly from vscode in debug mode to use breakpoints
