@@ -1,13 +1,9 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-let drawing = 0;
-let erasing = false;
 let selecting = false;
 let tmap = false;
 let map_tok = null;
-let mouse_dragging = false;
-let lines = [, ];
 let drags = [, ];
 let selected = [];
 let uid_counter = 0;
@@ -16,10 +12,21 @@ let z_counter = 0;
 let scale_start = 80;
 
 
+// Init all js objects. The app runs purely off event listeners after that.
+function main() {
+    initWindow();
+    initCanvas();
+
+    // TODO
+}
+
+
 // ---------- Window Init ---------- //
-canvas.height = window.innerHeight;
-canvas.width = window.innerWidth;
-ctx.lineWidth = 5;
+function initWindow() {
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    ctx.lineWidth = 5;
+}
 // ---------- Window Init ---------- //
 
 
@@ -361,48 +368,21 @@ function createToken(event, map_create) {
 
 
 // ---------- Canvas Init ---------- //
-canvas.style.backgroundImage = "url(Assets/Misc/blank.png)";
+const DEFAULT_BACKGROUND_IMAGE = "url(../../Assets/Misc/blank.png)";
+let mouse_drawing = false; // This is necessary for when cursor leaves the canvas while drawing
+let erasing = false;
+let lines = [, ];
 
-function drawstart(event) {
-    if (event.type == "mousedown")
-        mouse_dragging = true;
-    ctx.beginPath();
-    ctx.moveTo(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop);
-    drawing++;
+function initCanvas() {
+    canvas.style.backgroundImage = DEFAULT_BACKGROUND_IMAGE;
 
-    lines[event.identifier] = {
-        x: event.pageX - canvas.offsetLeft,
-        y: event.pageY - canvas.offsetTop
-    };
+    canvas.addEventListener("touchstart", touchstart, false);
+    canvas.addEventListener("touchend", touchend, false);
+    canvas.addEventListener("touchmove", touchmove, false);
 
-    ctx.lineTo(event.pageX - canvas.offsetLeft - 5, event.pageY - canvas.offsetTop + 5);
-    ctx.stroke();
-}
-
-function drawend(event) {
-    if (drawing == 0) return;
-
-    mouse_dragging = false;
-    drawing--;
-}
-
-function drawmove(event) {
-    if (drawing == 0) return;
-    if (!(event.target === canvas)) return;
-    if (event.type == "mousemove")
-        if (!mouse_dragging) return;
-
-    if (erasing)
-        ctx.clearRect(event.pageX - 35, event.pageY - 35, 70, 70);
-
-    ctx.moveTo(lines[event.identifier].x, lines[event.identifier].y);
-    ctx.lineTo(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop);
-    ctx.stroke();
-
-    lines[event.identifier] = {
-        x: event.pageX - canvas.offsetLeft,
-        y: event.pageY - canvas.offsetTop
-    };
+    canvas.addEventListener("mousedown", drawstart);
+    canvas.addEventListener("mouseup", drawend);
+    canvas.addEventListener("mousemove", drawmove);
 }
 
 function touchstart(event) { Array.from(event.touches).forEach(e => drawstart(e)) }
@@ -414,11 +394,51 @@ function touchmove(event) {
     Array.from(event.touches).forEach(e => drawmove(e));
 }
 
-canvas.addEventListener("touchstart", touchstart, false);
-canvas.addEventListener("touchend", touchend, false);
-canvas.addEventListener("touchmove", touchmove, false);
+function drawstart(event) {
+    if (event.type == "mousedown")
+        mouse_drawing = true;
 
-canvas.addEventListener("mousedown", drawstart);
-canvas.addEventListener("mouseup", drawend);
-canvas.addEventListener("mousemove", drawmove);
+    let x_pos = event.pageX - canvas.offsetLeft;
+    let y_pos = event.pageY - canvas.offsetTop;
+
+    ctx.beginPath();
+    ctx.moveTo(x_pos, y_pos);
+    ctx.lineTo(x_pos - 5, y_pos + 5); // This allows a single touch to draw a small 'dot'
+    ctx.stroke();
+
+    lines[event.identifier] = {
+        x: x_pos,
+        y: y_pos
+    };
+}
+
+function drawmove(event) {
+    if (!(event.target === canvas)) return;
+    if (event.type == "mousemove" && !mouse_drawing) return;
+
+    if (erasing)
+        ctx.clearRect(event.pageX - 35, event.pageY - 35, 70, 70);
+    else {
+        let x_pos = event.pageX - canvas.offsetLeft;
+        let y_pos = event.pageY - canvas.offsetTop;
+
+        ctx.moveTo(lines[event.identifier].x, lines[event.identifier].y);
+        ctx.lineTo(x_pos, y_pos);
+        ctx.stroke();
+
+        lines[event.identifier] = {
+            x: x_pos,
+            y: y_pos
+        };
+    }
+}
+
+function drawend(event) {
+    if (event.type == "mouseup")
+        mouse_drawing = false;
+}
 // ---------- Canvas Init ---------- //
+
+
+// Start the program
+main();
