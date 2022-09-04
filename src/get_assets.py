@@ -10,14 +10,14 @@ def add_option(soup, acc, path):
         item = item.replace("'", "\\'").replace(" ", "\ ")
         panel = soup.new_tag("div", attrs={"class": "panel"})
         option = soup.new_tag("button", attrs={
-            "class": "option", "style": f"background-image: url({path}/{item})"})
+            "class": "option", "style": f"background-image: url(../../{path}/{item})"})
 
         panel.append(option)
         acc.insert_after(panel)
 
 
 def main():
-    f = open("template.html")
+    f = open("src/html/template.html")
     soup = BeautifulSoup(f, "html.parser")
     f.close()
 
@@ -41,7 +41,7 @@ def main():
     add_option(soup, maps, grid_path)
     add_option(soup, aoe, aoe_path)
 
-    f = open("index.html", "w")
+    f = open("src/html/index.html", "w")
     f.write(soup.prettify())
     f.close()
 

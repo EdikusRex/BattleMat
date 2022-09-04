@@ -1,2 +1,2 @@
-python3 ./get_assets.py
-start index.html
+python3 src/get_assets.py
+start src/html/index.html

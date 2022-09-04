@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <link href="style.css" rel="stylesheet"/>
+  <title>
+   Adventure Time
+  </title>
+ </head>
+ <body>
+  <div class="nav">
+   <div class="clr" style="background-color: #000">
+   </div>
+   <div class="clr" style="background-color: #d60b0b">
+   </div>
+   <div class="clr" style="background-color: #2a11cf">
+   </div>
+   <div class="clr" style="background-color: #24d102">
+   </div>
+   <div class="clr" style="background-color: #fff">
+   </div>
+   <button class="opt erase">
+    erase
+   </button>
+   <button class="opt tmap">
+    map
+   </button>
+   <button class="opt sel">
+    sel
+   </button>
+   <button class="opt del">
+    del
+   </button>
+   <button class="opt clear">
+    clr
+   </button>
+  </div>
+  <div class="slidecontainer">
+   <input class="slider" id="sizeSlider" max="800" min="1" type="range" value="40"/>
+  </div>
+  <div class="rotateslider">
+   <input class="slider rotator" id="rotateSlider" max="360" min="0" type="range" value="0"/>
+  </div>
+  <canvas class="canvas" id="canvas">
+  </canvas>
+  <div class="menus" id="menus">
+   <button class="accordion" id="creatures">
+    Creatures
+   </button>
+   <div class="panel">
+    <button class="option" style="background-image: url(../../Assets/Creatures/Players/Varr.png)">
+    </button>
+   </div>
+   <div class="panel">
+    <button class="option" style="background-image: url(../../Assets/Creatures/Players/Cal.png)">
+    </button>
+   </div>
+   <button class="accordion" id="maps">
+    Maps
+   </button>
+   <div class="panel">
+    <button class="option" style="background-image: url(../../Assets/Maps/Grid/grid.png)">
+    </button>
+   </div>
+   <button class="accordion" id="aoe">
+    AoE
+   </button>
+   <div class="panel">
+    <button class="option" style="background-image: url(../../Assets/Misc/AoE/triangle.png)">
+    </button>
+   </div>
+   <div class="panel">
+    <button class="option" style="background-image: url(../../Assets/Misc/AoE/square.png)">
+    </button>
+   </div>
+   <div class="panel">
+    <button class="option" style="background-image: url(../../Assets/Misc/AoE/circle.png)">
+    </button>
+   </div>
+  </div>
+  <script src="../js/main.js">
+  </script>
+ </body>
+</html>
