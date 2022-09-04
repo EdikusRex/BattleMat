@@ -376,22 +376,16 @@ let lines = [, ];
 function initCanvas() {
     canvas.style.backgroundImage = DEFAULT_BACKGROUND_IMAGE;
 
-    canvas.addEventListener("touchstart", touchstart, false);
-    canvas.addEventListener("touchend", touchend, false);
-    canvas.addEventListener("touchmove", touchmove, false);
+    canvas.addEventListener("touchstart", function(event) { Array.from(event.touches).forEach(e => drawstart(e)) }, false);
+    canvas.addEventListener("touchend", function(event) { Array.from(event.changedTouches).forEach(e => drawend(e)) }, false);
+    canvas.addEventListener("touchmove", function(event) {
+        event.preventDefault();
+        Array.from(event.touches).forEach(e => drawmove(e));
+    }, false);
 
     canvas.addEventListener("mousedown", drawstart);
     canvas.addEventListener("mouseup", drawend);
     canvas.addEventListener("mousemove", drawmove);
-}
-
-function touchstart(event) { Array.from(event.touches).forEach(e => drawstart(e)) }
-
-function touchend(event) { Array.from(event.changedTouches).forEach(e => drawend(e)) }
-
-function touchmove(event) {
-    event.preventDefault();
-    Array.from(event.touches).forEach(e => drawmove(e));
 }
 
 function drawstart(event) {
