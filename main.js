@@ -111,7 +111,8 @@ document.querySelector(".sel").addEventListener("click", () => {
     if (selecting) {
         endSel();
     } else {
-        endTmap();
+        if (tmap)
+            endTmap();
         selecting = true;
         Array.from(selected).forEach((x) => x.classList.add("selected"));
         erasing = false;
@@ -314,9 +315,7 @@ function createToken(event, map_create) {
         }
         token.style.zIndex = z_counter++;
 
-        if (!token.classList.contains("map_token"))
-            endTmap();
-        else
+        if (token.classList.contains("map_token"))
             startTmap();
 
         drags[uid] = {
