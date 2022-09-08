@@ -1,218 +1,273 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-let drawing = 0;
-let erasing = false;
-let selecting = false;
-let tmap = false;
-let map_tok = null;
-let mouse_dragging = false;
-let lines = [, ];
-let drags = [, ];
-let selected = [];
-let uid_counter = 0;
-let z_counter = 0;
-
-let scale_start = 80;
+// Each mode should have associated startMode and endMode functions.
+const modes = {
+    none: Symbol("none"),
+    erase: Symbol("erase"),
+    select: Symbol("select"),
+    tmap: Symbol("transform_map")
+};
+let currentMode = modes.none;
 
 
-// ---------- Window Init ---------- //
-canvas.height = window.innerHeight;
-canvas.width = window.innerWidth;
-ctx.lineWidth = 5;
-// ---------- Window Init ---------- //
+// Init all js objects. The app runs purely off event listeners after that.
+function main() {
+    initWindow();
+    initCanvas();
+    initButtons();
+    initDropdowns();
+}
 
-
-// ---------- Button Init ---------- //
-Array.from(document.querySelectorAll(".clr")).forEach(clr => {
-    clr.addEventListener("click", () => {
-        ctx.strokeStyle = clr.style.backgroundColor;
-        canvas.style.cursor = "auto";
-        erasing = false;
-        endTmap();
-
-        if (document.querySelector(".erase").classList.contains("active"))
-            document.querySelector(".erase").classList.remove("active");
-    })
-});
-
-document.querySelector(".clear").addEventListener("click", () => {
-    if (!selecting)
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-    else if (selected.length > 0) {
-        selected[0].classList.remove("selected");
-        selected.splice(0, 1);
+// End current mode, then start new mode.
+// Passing currentMode is the same as passing modes.none
+function changeMode(newMode) {
+    switch (currentMode) {
+        case modes.erase:
+            endErase();
+            break;
+        case modes.select:
+            endSelect();
+            break;
+        case modes.tmap:
+            endTmap();
+            break;
     }
-});
 
-document.querySelector(".erase").addEventListener("click", () => {
+    if (newMode === currentMode) {
+        currentMode = modes.none;
+        return;
+    }
+    currentMode = newMode;
+
+    switch (newMode) {
+        case modes.erase:
+            startErase();
+            break;
+        case modes.select:
+            startSelect();
+            break;
+        case modes.tmap:
+            startTmap();
+            break;
+    }
+}
+
+
+// ---------- Window Init ---------- //
+function initWindow() {
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    ctx.lineWidth = 5;
+}
+// ---------- Window Init ---------- //
+
+
+// ---------- Canvas ---------- //
+const ERASER_CURSOR = "url(\"../../Assets/Misc/square.png\")";
+
+let mouse_drawing = false; // This is necessary for when cursor leaves the canvas while drawing
+let lines = [, ];
+
+function initCanvas() {
+    canvas.style.backgroundImage = DEFAULT_BACKGROUND_IMAGE;
+
+    // Init touch drawing
+    canvas.addEventListener("touchstart", function(event) {
+        Array.from(event.touches).forEach(e => drawStart(e));
+    }, false);
+    canvas.addEventListener("touchmove", function(event) {
+        event.preventDefault();
+        Array.from(event.touches).forEach(e => drawMove(e));
+    }, false);
+    canvas.addEventListener("touchend", function(event) {
+        Array.from(event.changedTouches).forEach(e => drawEnd(e));
+    }, false);
+
+    // Init mouse drawing
+    canvas.addEventListener("mousedown", drawStart);
+    canvas.addEventListener("mousemove", drawMove);
+    canvas.addEventListener("mouseup", drawEnd);
+}
+
+function drawStart(event) {
+    if (event.type == "mousedown")
+        mouse_drawing = true;
+
+    let x_pos = event.pageX - canvas.offsetLeft;
+    let y_pos = event.pageY - canvas.offsetTop;
+
+    ctx.beginPath();
+
+    // This allows a single touch to draw a small dot
+    ctx.moveTo(x_pos, y_pos);
+    ctx.lineTo(x_pos - 5, y_pos + 5);
+    ctx.stroke();
+
+    lines[event.identifier] = {
+        x: x_pos,
+        y: y_pos
+    };
+}
+
+function drawMove(event) {
+    if (event.type == "mousemove" && !mouse_drawing) return;
+
+    if (currentMode === modes.erase)
+        ctx.clearRect(event.pageX - 35, event.pageY - 35, 70, 70);
+    else {
+        let x_pos = event.pageX - canvas.offsetLeft;
+        let y_pos = event.pageY - canvas.offsetTop;
+
+        ctx.moveTo(lines[event.identifier].x, lines[event.identifier].y);
+        ctx.lineTo(x_pos, y_pos);
+        ctx.stroke();
+
+        lines[event.identifier] = {
+            x: x_pos,
+            y: y_pos
+        };
+    }
+}
+
+function drawEnd(event) {
+    if (event.type == "mouseup")
+        mouse_drawing = false;
+}
+
+function changeStrokeColor(clr) {
+    ctx.strokeStyle = clr.style.backgroundColor;
+}
+
+function startErase() {
     ctx.strokeStyle = "rgba(0,0,0,0)";
-    canvas.style.cursor = "url(\"Assets/Misc/square.png\") 40 40, auto";
-    erasing = true;
-    endTmap();
-    endSel();
+    canvas.style.cursor = `${ERASER_CURSOR} 40 40, auto`;
 
     if (!document.querySelector(".erase").classList.contains("active"))
         document.querySelector(".erase").classList.add("active");
-});
-
-document.querySelector(".del").addEventListener("click", () => {
-    while (selecting && selected.length > 0) {
-        if (!selected[0])
-            selected.splice(0, 1);
-        else {
-            selected[0].remove();
-            selected.splice(0, 1);
-        }
-    }
-    if (tmap) {
-        canvas.style.backgroundSize = "100% 100%";
-        canvas.style.backgroundPosition = "0px 0px";
-        map_tok.remove();
-        map_tok = null;
-        endTmap();
-    }
-});
-
-document.querySelector(".tmap").addEventListener("click", () => {
-    if (!tmap && canvas.style.backgroundImage == "url(\"Assets/Misc/blank.png\")") return;
-
-    canvas.style.cursor = "auto";
-    if (tmap)
-        endTmap();
-    else {
-        startTmap();
-        createToken(null, true);
-    }
-
-    if (canvas.style.backgroundSize)
-        document.getElementById("sizeSlider").value = canvas.style.backgroundSize.split("%")[0];
-    else
-        document.getElementById("sizeSlider").value = 100;
-});
-
-function endSel() {
-    Array.from(selected).forEach((x) => x.classList.remove("selected"));
-    selected = [];
-    selecting = false;
-
-    if (document.querySelector(".sel").classList.contains("active"))
-        document.querySelector(".sel").classList.remove("active");
-
-    if (!document.querySelector(".slidecontainer").classList.contains("hidden"))
-        document.querySelector(".slidecontainer").classList.add("hidden");
-    if (!document.querySelector(".rotateslider").classList.contains("hidden"))
-        document.querySelector(".rotateslider").classList.add("hidden");
 }
 
-document.querySelector(".slidecontainer").classList.add("hidden");
-document.querySelector(".rotateslider").classList.add("hidden");
-document.querySelector(".sel").addEventListener("click", () => {
-    if (selecting) {
-        endSel();
-    } else {
-        if (tmap)
-            endTmap();
-        selecting = true;
-        Array.from(selected).forEach((x) => x.classList.add("selected"));
-        erasing = false;
-        canvas.style.cursor = "auto";
-
-        if (!document.querySelector(".sel").classList.contains("active"))
-            document.querySelector(".sel").classList.add("active");
-
-        if (document.querySelector(".slidecontainer").classList.contains("hidden"))
-            document.querySelector(".slidecontainer").classList.remove("hidden");
-        if (document.querySelector(".rotateslider").classList.contains("hidden"))
-            document.querySelector(".rotateslider").classList.remove("hidden");
-
-        if (document.querySelector(".erase").classList.contains("active"))
-            document.querySelector(".erase").classList.remove("active");
-    }
-});
-
-document.getElementById("sizeSlider").value = scale_start;
-document.getElementById("sizeSlider").oninput = function() {
-    if (tmap) {
-        canvas.style.backgroundSize = this.value + "%";
-        map_tok.height = canvas.height * this.value * 0.01;
-        map_tok.width = canvas.width * this.value * 0.01;
-    } else if (selected.length > 0) {
-        Array.from(selected).forEach((x) => {
-            var scale = this.value / scale_start;
-            var maintain = x.style.transform.split(" ")[1];
-
-            x.style.transform = "scale(" + scale + ")" + maintain;
-        });
-    }
-};
-
-document.getElementById("rotateSlider").oninput = function() {
-    if (tmap || selected.length == 0) return;
-
-    Array.from(selected).forEach((x) => {
-        var maintain = x.style.transform.split(" ")[0];
-        x.style.transform = maintain + "rotate(" + this.value + "deg)";
-    });
-};
-// ---------- Button Init ---------- //
-
-
-// ---------- Transform Map ---------- //
-function startTmap() {
-    tmap = true;
-    erasing = false;
-    endSel();
-
-    if (document.querySelector(".slidecontainer").classList.contains("hidden"))
-        document.querySelector(".slidecontainer").classList.remove("hidden");
-
-    if (!document.querySelector(".tmap").classList.contains("active"))
-        document.querySelector(".tmap").classList.add("active");
+function endErase() {
+    canvas.style.cursor = "auto";
 
     if (document.querySelector(".erase").classList.contains("active"))
         document.querySelector(".erase").classList.remove("active");
 }
 
-function endTmap() {
-    tmap = false;
-
-    if (document.querySelector(".tmap").classList.contains("active"))
-        document.querySelector(".tmap").classList.remove("active");
-
-    if (selecting) return;
-
-    if (!document.querySelector(".slidecontainer").classList.contains("hidden"))
-        document.querySelector(".slidecontainer").classList.add("hidden");
-
-    if (map_tok) {
-        canvas.style.backgroundImage = "url(" + map_tok.src + ")";
-        canvas.style.backgroundPosition = map_tok.style.left + " " + map_tok.style.top;
-        canvas.style.backgroundSize = document.getElementById("sizeSlider").value + "% " +
-            document.getElementById("sizeSlider").value + "%";
-        map_tok.remove();
-    }
+function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
-// ---------- Transform Map ---------- //
+// ---------- Canvas ---------- //
 
 
-// ---------- Dropdown Init ---------- //
-Array.from(document.getElementsByClassName("accordion")).forEach(acc => {
-    acc.addEventListener("click", function() {
-        this.classList.toggle("active");
-        var panel = this.nextElementSibling;
-
-        while (panel != null && panel.classList.contains("panel")) {
-            if (panel.style.maxHeight)
-                panel.style.maxHeight = null;
-            else
-                panel.style.maxHeight = panel.scrollHeight + "px";
-
-            panel = panel.nextElementSibling;
-        }
+// ---------- Buttons ---------- //
+function initButtons() {
+    // Init color selection buttons
+    Array.from(document.querySelectorAll(".clr")).forEach(clr => {
+        clr.addEventListener("click", () => {
+            changeStrokeColor(clr);
+            if (currentMode === modes.erase) // Changing color should only end erase mode
+                changeMode(modes.none);
+        })
     });
 
-    if (acc.id == "creatures") {
+    document.querySelector(".erase").addEventListener("click", () => {
+        changeMode(modes.erase);
+    });
+
+    document.querySelector(".clear").addEventListener("click", () => {
+        if (currentMode === modes.select)
+            clearLastSelection();
+        else
+            clearCanvas();
+    });
+
+    document.querySelector(".del").addEventListener("click", () => {
+        if (currentMode === modes.select)
+            deleteSelected();
+        else if (currentMode === modes.tmap)
+            resetMap();
+    })
+
+    document.querySelector(".tmap").addEventListener("click", () => {
+        changeMode(modes.tmap);
+    });
+
+    document.querySelector(".sel").addEventListener("click", () => {
+        changeMode(modes.select);
+    });
+
+    document.getElementById("sizeSlider").oninput = function() {
+        if (currentMode === modes.tmap)
+            resizeMap(this);
+        else
+            resizeSelected(this);
+    };
+    document.getElementById("rotateSlider").oninput = function() {
+        rotateSelected(this);
+    }
+
+    hideSizeSlider();
+    hideRotateSlider();
+}
+
+// Moves sliders to match current token size
+function updateSliders(token) {
+    document.getElementById("sizeSlider").value = token.style.transform.split(" ")[0].slice(6, -1) * SCALE_START;
+
+    if (token.style.transform)
+        document.getElementById("rotateSlider").value = token.style.transform.split(" ")[1].slice(7, -4);
+    else
+        document.getElementById("rotateSlider").value = 0;
+}
+
+function showSizeSlider() {
+    if (document.querySelector(".slidecontainer").classList.contains("hidden"))
+        document.querySelector(".slidecontainer").classList.remove("hidden");
+}
+
+function showRotateSlider() {
+    if (document.querySelector(".rotateslider").classList.contains("hidden"))
+        document.querySelector(".rotateslider").classList.remove("hidden");
+}
+
+function hideSizeSlider() {
+    if (!document.querySelector(".slidecontainer").classList.contains("hidden"))
+        document.querySelector(".slidecontainer").classList.add("hidden");
+}
+
+function hideRotateSlider() {
+    if (!document.querySelector(".rotateslider").classList.contains("hidden"))
+        document.querySelector(".rotateslider").classList.add("hidden");
+}
+// ---------- Buttons ---------- //
+
+
+// ---------- Dropdowns ---------- //
+function initDropdowns() {
+    Array.from(document.getElementsByClassName("accordion")).forEach((acc) => {
+        acc.addEventListener("click", toggleAccordion);
+        assignAccordionBehavior(acc);
+    });
+}
+
+// Toggle panels open or closed
+function toggleAccordion() {
+    this.classList.toggle("active");
+    var panel = this.nextElementSibling;
+
+    while (panel != null && panel.classList.contains("panel")) {
+        if (panel.style.maxHeight)
+            panel.style.maxHeight = null;
+        else
+            panel.style.maxHeight = panel.scrollHeight + "px";
+
+        panel = panel.nextElementSibling;
+    }
+}
+
+function assignAccordionBehavior(acc) {
+    if (acc.id == "creatures" || acc.id == "aoe") {
         var panel = acc.nextElementSibling;
         while (panel != null && panel.classList.contains("panel")) {
             panel.children[0].addEventListener("click", createToken);
@@ -221,204 +276,249 @@ Array.from(document.getElementsByClassName("accordion")).forEach(acc => {
     } else if (acc.id == "maps") {
         var panel = acc.nextElementSibling;
         while (panel != null && panel.classList.contains("panel")) {
-            panel.children[0].addEventListener("click", function() {
-                if (canvas.style.backgroundImage == window.getComputedStyle(this).backgroundImage)
-                    canvas.style.backgroundImage = "url(Assets/Misc/blank.png)";
-                else
-                    canvas.style.backgroundImage = window.getComputedStyle(this).backgroundImage;
-            });
-            panel = panel.nextElementSibling;
-        }
-    } else if (acc.id == "aoe") {
-        var panel = acc.nextElementSibling;
-        while (panel != null && panel.classList.contains("panel")) {
-            panel.children[0].addEventListener("click", createToken);
+            panel.children[0].addEventListener("click", openMap);
             panel = panel.nextElementSibling;
         }
     }
-});
-// ---------- Dropdown Init ---------- //
+}
+// ---------- Dropdowns ---------- //
 
 
-// ---------- Token Init ---------- //
-function createToken(event, map_create) {
-    var token = new Image(scale_start, scale_start);
-    var uid = uid_counter++;
+// ---------- Map ---------- //
+const DEFAULT_BACKGROUND_IMAGE = "url(\"../../Assets/Misc/blank.png\")";
 
-    if (!map_create)
-        endTmap();
+let map_token = null;
 
-    if (tmap) {
-        if (!canvas.style.backgroundSize)
-            canvas.style.backgroundSize = "100% 100%";
-        token.width = canvas.width * canvas.style.backgroundSize.split("%")[0] * 0.01;
-        token.height = canvas.height * canvas.style.backgroundSize.split("%")[1].slice(1) * 0.01;
+function openMap(event) {
+    let map = event.target;
 
-        token.src = canvas.style.backgroundImage.slice(5, -2);
+    if (currentMode === modes.tmap) return;
 
-        if (canvas.style.backgroundPosition) {
-            token.style.left = canvas.style.backgroundPosition.split(" ")[0];
-            token.style.top = canvas.style.backgroundPosition.split(" ")[1];
-        } else {
-            token.style.left = "0px";
-            token.style.top = "0px";
-        }
-        token.style.opacity = 0.4;
-        token.style.zIndex = 998;
-        token.classList.add("map_token");
-        map_tok = token;
+    if (canvas.style.backgroundImage == DEFAULT_BACKGROUND_IMAGE)
+        canvas.style.backgroundImage = window.getComputedStyle(map).backgroundImage;
+    else
+        canvas.style.backgroundImage = DEFAULT_BACKGROUND_IMAGE;
+}
 
-        canvas.style.backgroundImage = "url(Assets/Misc/blank.png)";
-    } else if (event) {
-        token.style.left = 300 + 'px';
-        token.style.top = 200 + 'px';
-        token.src = window.getComputedStyle(this).backgroundImage.slice(5, -2);
+function resetMap() {
+    if (currentMode === modes.tmap)
+        changeMode(modes.none);
+
+    canvas.style.backgroundImage = DEFAULT_BACKGROUND_IMAGE;
+    canvas.style.backgroundSize = "100% 100%";
+    canvas.style.backgroundPosition = "0px 0px";
+}
+
+function startTmap() {
+    if (canvas.style.backgroundImage == DEFAULT_BACKGROUND_IMAGE) {
+        changeMode(modes.none);
+        return;
+    }
+
+    createMapToken(); // Must run before setting background image to default
+    showSizeSlider();
+    canvas.style.backgroundImage = DEFAULT_BACKGROUND_IMAGE;
+
+    if (canvas.style.backgroundSize)
+        document.getElementById("sizeSlider").value = canvas.style.backgroundSize.split("%")[0];
+    else
+        document.getElementById("sizeSlider").value = 100;
+
+    if (!document.querySelector(".tmap").classList.contains("active"))
+        document.querySelector(".tmap").classList.add("active");
+}
+
+function endTmap() {
+    if (map_token) {
+        canvas.style.backgroundImage = "url(" + map_token.src + ")";
+        canvas.style.backgroundPosition = map_token.style.left + " " + map_token.style.top;
+        canvas.style.backgroundSize = document.getElementById("sizeSlider").value + "% " +
+            document.getElementById("sizeSlider").value + "%";
+        map_token.remove();
+        map_token = null;
+    }
+
+    hideSizeSlider();
+
+    if (document.querySelector(".tmap").classList.contains("active"))
+        document.querySelector(".tmap").classList.remove("active");
+}
+
+function resizeMap(slider) {
+    canvas.style.backgroundSize = slider.value + "%";
+    map_token.height = canvas.height * slider.value * 0.01;
+    map_token.width = canvas.width * slider.value * 0.01;
+}
+
+function createMapToken() {
+    map_token = createToken(null);
+
+    if (!canvas.style.backgroundSize)
+        canvas.style.backgroundSize = "100% 100%";
+    map_token.src = canvas.style.backgroundImage.slice(5, -2);
+    map_token.width = canvas.width * canvas.style.backgroundSize.split("%")[0] * 0.01;
+    map_token.height = canvas.height * canvas.style.backgroundSize.split("%")[1].slice(1) * 0.01;
+    map_token.style.opacity = 0.4;
+    map_token.style.zIndex = 998;
+    map_token.classList.add("map_token");
+
+    if (canvas.style.backgroundPosition) {
+        map_token.style.left = canvas.style.backgroundPosition.split(" ")[0];
+        map_token.style.top = canvas.style.backgroundPosition.split(" ")[1];
     } else {
-        token.style.left = 400 + 'px';
-        token.style.top = 300 + 'px';
-        token.style.borderRadius = "50%";
-        token.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-        token.src = "Assets/Misc/aoe.png";
+        map_token.style.left = "0px";
+        map_token.style.top = "0px";
     }
-    token.style.transform = "scale(1) rotate(0)";
+}
+// ---------- Map ---------- //
 
+
+// ---------- Tokens ---------- //
+const SCALE_START = 80;
+
+let selected = [];
+let drags = [, ];
+let uid_counter = 0;
+let z_layer = 0;
+let mouse_dragging = false; // Prevents token drag when mouse isn't clicked
+
+// Pass null to allow caller to handle style.src
+function createToken(event) {
+    var token = new Image(SCALE_START, SCALE_START);
+
+    token.id = uid_counter++;
+    token.style.left = 300 + 'px';
+    token.style.top = 200 + 'px';
+    token.style.transform = "scale(1) rotate(0)";
     token.classList.add("token");
-    if (selecting) {
+    if (event) // event is null when invoked by createMapToken. src will be set by createMapToken
+        token.src = window.getComputedStyle(event.target).backgroundImage.slice(5, -2);
+
+    if (currentMode === modes.select) {
         token.classList.add("selected");
         selected.splice(0, 0, token);
     }
-    document.getElementById("sizeSlider").value = token.height;
-    document.body.appendChild(token);
 
-    token.addEventListener("touchstart", tdragStart, false);
-    token.addEventListener("touchmove", tdrag, false);
-
-    token.addEventListener("mousedown", dragStart);
-    token.addEventListener("mousemove", drag);
-    token.addEventListener("mouseup", () => mouse_dragging = false);
-
-    function tdragStart(event) { Array.from(event.touches).forEach(e => dragStart(e)) }
-
-    function tdrag(event) {
+    // Add touch event listeners
+    token.addEventListener("touchstart", function(event) {
+        Array.from(event.touches).forEach(e => dragStart(e));
+    }, false);
+    token.addEventListener("touchmove", function(event) {
         event.preventDefault();
         Array.from(event.touches).forEach(e => drag(e));
-    }
+    }, false);
+    token.addEventListener("touchend", function(event) {
+        Array.from(event.touches).forEach(e => dragEnd(e));
+    }, false);
 
-    function dragStart(event) {
-        if (!(event.target === token)) return;
-        if (event.type == "mousedown")
-            mouse_dragging = true;
+    // Add mouse event listeners
+    token.addEventListener("mousedown", function(event) {
+        dragStart(event);
+    });
+    token.addEventListener("mousemove", drag);
+    token.addEventListener("mouseup", dragEnd);
 
-        if (z_counter == 900) {
-            z_counter = 0;
-            Array.from(selected).reverse().forEach((x) => x.style.zIndex = z_counter++);
-        }
-        token.style.zIndex = z_counter++;
+    document.body.appendChild(token);
 
-        if (token.classList.contains("map_token"))
-            startTmap();
-
-        drags[uid] = {
-            dx: event.clientX - token.style.left.slice(0, -2),
-            dy: event.clientY - token.style.top.slice(0, -2)
-        };
-
-        if (event.target === token) {
-            if (selecting) {
-                selected = selected.filter((x) => x != token);
-                selected.splice(0, 0, token);
-                if (!token.classList.contains("selected"))
-                    token.classList.add("selected");
-            }
-            if (tmap)
-                document.getElementById("sizeSlider").value = canvas.style.backgroundSize.split("%")[0];
-            else {
-                document.getElementById("sizeSlider").value = token.style.transform.split(" ")[0].slice(6, -1) * scale_start;
-
-                if (token.style.transform)
-                    document.getElementById("rotateSlider").value = token.style.transform.split(" ")[1].slice(7, -4);
-                else
-                    document.getElementById("rotateSlider").value = 0;
-            }
-        }
-    }
-
-    function drag(event) {
-        if (!(uid in drags && event.target === token)) return;
-        if (event.type == "mousemove") {
-            if (!mouse_dragging) return;
-            event.preventDefault();
-        }
-
-        var dx = event.clientX - drags[uid].dx;
-        var dy = event.clientY - drags[uid].dy;
-
-        token.style.left = dx + 'px';
-        token.style.top = dy + 'px';
-    }
+    return token;
 }
-// ---------- Token Init ---------- //
 
+function dragStart(event) {
+    let token = event.target;
 
-// ---------- Canvas Init ---------- //
-canvas.style.backgroundImage = "url(Assets/Misc/blank.png)";
-
-function drawstart(event) {
     if (event.type == "mousedown")
         mouse_dragging = true;
-    ctx.beginPath();
-    ctx.moveTo(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop);
-    drawing++;
 
-    lines[event.identifier] = {
-        x: event.pageX - canvas.offsetLeft,
-        y: event.pageY - canvas.offsetTop
+    if (currentMode === modes.select) {
+        selected = selected.filter((x) => x != token);
+        selected.splice(0, 0, token);
+        if (!token.classList.contains("selected"))
+            token.classList.add("selected");
+        updateSliders(token);
+    }
+
+    // Place token above everything else.
+    // If Z level maximum is reached, reset z order of all tokens.
+    if (z_layer == 900) {
+        z_layer = 0;
+        Array.from(document.getElementsByClassName("token")).reverse().forEach((x) => x.style.zIndex = z_layer++);
+    }
+    token.style.zIndex = z_layer++;
+
+    // This accounts for the offset between where user clicks and top left corner of the token.
+    drags[token.id] = {
+        dx: event.clientX - token.style.left.slice(0, -2),
+        dy: event.clientY - token.style.top.slice(0, -2)
     };
-
-    ctx.lineTo(event.pageX - canvas.offsetLeft - 5, event.pageY - canvas.offsetTop + 5);
-    ctx.stroke();
 }
 
-function drawend(event) {
-    if (drawing == 0) return;
+function drag(event) {
+    let token = event.target;
 
-    mouse_dragging = false;
-    drawing--;
-}
-
-function drawmove(event) {
-    if (drawing == 0) return;
-    if (!(event.target === canvas)) return;
-    if (event.type == "mousemove")
+    if (!(token.id in drags)) return;
+    if (event.type == "mousemove") {
         if (!mouse_dragging) return;
+        event.preventDefault();
+    }
 
-    if (erasing)
-        ctx.clearRect(event.pageX - 35, event.pageY - 35, 70, 70);
-
-    ctx.moveTo(lines[event.identifier].x, lines[event.identifier].y);
-    ctx.lineTo(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop);
-    ctx.stroke();
-
-    lines[event.identifier] = {
-        x: event.pageX - canvas.offsetLeft,
-        y: event.pageY - canvas.offsetTop
-    };
+    token.style.left = event.clientX - drags[token.id].dx + 'px';
+    token.style.top = event.clientY - drags[token.id].dy + 'px';
 }
 
-function touchstart(event) { Array.from(event.touches).forEach(e => drawstart(e)) }
-
-function touchend(event) { Array.from(event.changedTouches).forEach(e => drawend(e)) }
-
-function touchmove(event) {
-    event.preventDefault();
-    Array.from(event.touches).forEach(e => drawmove(e));
+function dragEnd(event) {
+    if (event.type == "mouseup")
+        mouse_dragging = false;
 }
 
-canvas.addEventListener("touchstart", touchstart, false);
-canvas.addEventListener("touchend", touchend, false);
-canvas.addEventListener("touchmove", touchmove, false);
+function startSelect() {
+    showSizeSlider();
+    showRotateSlider();
 
-canvas.addEventListener("mousedown", drawstart);
-canvas.addEventListener("mouseup", drawend);
-canvas.addEventListener("mousemove", drawmove);
-// ---------- Canvas Init ---------- //
+    if (selected.length > 0)
+        document.getElementById("sizeSlider").value = token.height;
+
+    if (!document.querySelector(".sel").classList.contains("active"))
+        document.querySelector(".sel").classList.add("active");
+}
+
+function endSelect() {
+    selected.forEach((x) => { x.classList.remove("selected") });
+    selected = [];
+
+    hideSizeSlider();
+    hideRotateSlider();
+
+    if (document.querySelector(".sel").classList.contains("active"))
+        document.querySelector(".sel").classList.remove("active");
+}
+
+function clearLastSelection() {
+    selected[0].classList.remove("selected");
+    selected.splice(0, 1);
+}
+
+function deleteSelected() {
+    selected.filter((x) => { return x != null }).forEach((x) => { x.remove() });
+    selected = [];
+}
+
+function resizeSelected(slider) {
+    selected.forEach((x) => {
+        var scale = slider.value / SCALE_START;
+        var maintain_rotation = x.style.transform.split(" ")[1];
+
+        x.style.transform = "scale(" + scale + ")" + maintain_rotation;
+    });
+}
+
+function rotateSelected(slider) {
+    selected.forEach((x) => {
+        var maintain_size = x.style.transform.split(" ")[0];
+        x.style.transform = maintain_size + "rotate(" + slider.value + "deg)";
+    });
+}
+// ---------- Tokens ---------- //
+
+
+// Start the program
+main();
