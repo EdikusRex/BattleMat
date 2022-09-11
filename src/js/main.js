@@ -294,10 +294,10 @@ function openMap(event) {
 
     if (currentMode === modes.tmap) return;
 
-    if (canvas.style.backgroundImage == DEFAULT_BACKGROUND_IMAGE)
-        canvas.style.backgroundImage = window.getComputedStyle(map).backgroundImage;
-    else
+    if (canvas.style.backgroundImage == window.getComputedStyle(map).backgroundImage)
         canvas.style.backgroundImage = DEFAULT_BACKGROUND_IMAGE;
+    else
+        canvas.style.backgroundImage = window.getComputedStyle(map).backgroundImage;
 }
 
 function resetMap() {
