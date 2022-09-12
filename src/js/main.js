@@ -440,7 +440,7 @@ function dragStart(event) {
     // If Z level maximum is reached, reset z order of all tokens.
     if (z_layer == 900) {
         z_layer = 0;
-        Array.from(document.getElementsByClassName("token")).sort((a, b) => { return a - b }).forEach((x) => x.style.zIndex = z_layer++);
+        Array.from(document.getElementsByClassName("token")).sort((a, b) => { return a.style.zIndex - b.style.zIndex }).forEach((x) => x.style.zIndex = z_layer++);
     }
     token.style.zIndex = z_layer++;
 
