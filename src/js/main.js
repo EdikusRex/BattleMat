@@ -267,18 +267,17 @@ function toggleAccordion() {
 }
 
 function assignAccordionBehavior(acc) {
-    if (acc.id == "creatures" || acc.id == "aoe") {
-        var panel = acc.nextElementSibling;
-        while (panel != null && panel.classList.contains("panel")) {
-            panel.children[0].addEventListener("click", createToken);
-            panel = panel.nextElementSibling;
-        }
-    } else if (acc.id == "maps") {
-        var panel = acc.nextElementSibling;
-        while (panel != null && panel.classList.contains("panel")) {
-            panel.children[0].addEventListener("click", openMap);
-            panel = panel.nextElementSibling;
-        }
+    let panelBehavior = null;
+
+    if (acc.id == "creatures" || acc.id == "aoe")
+        panelBehavior = createToken;
+    else if (acc.id == "maps")
+        panelBehavior = openMap;
+
+    var panel = acc.nextElementSibling;
+    while (panel != null && panel.classList.contains("panel")) {
+        panel.children[0].addEventListener("click", panelBehavior);
+        panel = panel.nextElementSibling;
     }
 }
 // ---------- Dropdowns ---------- //
@@ -441,7 +440,7 @@ function dragStart(event) {
     // If Z level maximum is reached, reset z order of all tokens.
     if (z_layer == 900) {
         z_layer = 0;
-        Array.from(document.getElementsByClassName("token")).reverse().forEach((x) => x.style.zIndex = z_layer++);
+        Array.from(document.getElementsByClassName("token")).sort((a, b) => { return a - b }).forEach((x) => x.style.zIndex = z_layer++);
     }
     token.style.zIndex = z_layer++;
 
