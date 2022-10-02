@@ -187,6 +187,8 @@ function initButtons() {
             deleteSelected();
         else if (currentMode === modes.tmap)
             resetMap();
+        else
+            deleteSingleToken();
     })
 
     document.querySelector(".tmap").addEventListener("click", () => {
@@ -393,10 +395,7 @@ function createToken(event) {
     if (event) // event is null when invoked by createMapToken. src will be set by createMapToken
         token.src = window.getComputedStyle(event.target).backgroundImage.slice(5, -2);
 
-    if (currentMode === modes.select) {
-        token.classList.add("selected");
-        selected.splice(0, 0, token);
-    }
+    addTokenToSelected(token);
 
     // Add touch event listeners
     token.addEventListener("touchstart", function(event) {
@@ -428,13 +427,7 @@ function dragStart(event) {
     if (event.type == "mousedown")
         mouse_dragging = true;
 
-    if (currentMode === modes.select) {
-        selected = selected.filter((x) => x != token);
-        selected.splice(0, 0, token);
-        if (!token.classList.contains("selected"))
-            token.classList.add("selected");
-        updateSliders(token);
-    }
+    addTokenToSelected(token);
 
     // Place token above everything else.
     // If Z level maximum is reached, reset z order of all tokens.
@@ -473,8 +466,7 @@ function startSelect() {
     showSizeSlider();
     showRotateSlider();
 
-    if (selected.length > 0)
-        document.getElementById("sizeSlider").value = token.height;
+    selected = []; // Needed to clear individual selects
 
     if (!document.querySelector(".sel").classList.contains("active"))
         document.querySelector(".sel").classList.add("active");
@@ -491,30 +483,67 @@ function endSelect() {
         document.querySelector(".sel").classList.remove("active");
 }
 
+function addTokenToSelected(token) {
+    selected = selected.filter((x) => x != token); // Clear out existing references to same token
+    selected.splice(0, 0, token);
+
+    showSizeSlider();
+    showRotateSlider();
+    updateSliders(token);
+
+    if (currentMode === modes.select && !token.classList.contains("selected"))
+        token.classList.add("selected");
+}
+
 function clearLastSelection() {
     selected[0].classList.remove("selected");
     selected.splice(0, 1);
 }
 
+function deleteSingleToken() {
+    if (selected.length == 0) return;
+
+    selected[0].remove();
+    selected.splice(0, 1);
+
+    if (selected.length == 0) {
+        hideSizeSlider();
+        hideRotateSlider();
+    } else
+        updateSliders(selected[0]);
+}
+
 function deleteSelected() {
     selected.filter((x) => { return x != null }).forEach((x) => { x.remove() });
     selected = [];
+
+    if (currentMode === modes.select)
+        changeMode(modes.none);
 }
 
 function resizeSelected(slider) {
-    selected.forEach((x) => {
+    let resize = (x) => {
         var scale = slider.value / SCALE_START;
         var maintain_rotation = x.style.transform.split(" ")[1];
-
         x.style.transform = "scale(" + scale + ")" + maintain_rotation;
-    });
+    };
+
+    if (currentMode === modes.select)
+        selected.forEach(resize);
+    else if (selected.length > 0)
+        resize(selected[0]);
 }
 
 function rotateSelected(slider) {
-    selected.forEach((x) => {
+    let rotate = (x) => {
         var maintain_size = x.style.transform.split(" ")[0];
         x.style.transform = maintain_size + "rotate(" + slider.value + "deg)";
-    });
+    };
+
+    if (currentMode === modes.select)
+        selected.forEach(rotate);
+    else if (selected.length > 0)
+        rotate(selected[0]);
 }
 // ---------- Tokens ---------- //
 
