@@ -36,10 +36,10 @@ def main():
     aoe_path = "Assets/Misc/AoE"
     aoe_acc = soup.find(id="aoe")
 
-    add_option(soup, creatures_acc, creature_path)
     add_option(soup, creatures_acc, player_path)
-    add_option(soup, maps_acc, map_path)
+    add_option(soup, creatures_acc, creature_path)
     add_option(soup, maps_acc, grid_path)
+    add_option(soup, maps_acc, map_path)
     add_option(soup, aoe_acc, aoe_path)
 
     f = open("src/html/index.html", "w")
