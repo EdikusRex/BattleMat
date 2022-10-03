@@ -142,10 +142,10 @@ div.menus {
     top: 2px;
     left: 5px;
     width: 156px;
-    max-height: 90%;
+    height: 95%;
     opacity: .3;
     transition: opacity .5s;
-    overflow-y: auto;
+    overflow-y: hidden;
     z-index: 999;
 }
 
@@ -180,13 +180,17 @@ div.menus:hover {
     background-color: #ccc;
 }
 
-.panel {
-    padding: 0 18px;
-    margin-bottom: 2px;
+.panelContainer {
     background-color: #eee;
     max-height: 0;
-    overflow: hidden;
+    overflow-y: auto;
     transition: max-height 0.2s ease-out;
+}
+
+.panel {
+    max-height: 120px;
+    padding: 0 10px;
+    margin-bottom: 2px;
 }
 
 .token {

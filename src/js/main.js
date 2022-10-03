@@ -255,17 +255,18 @@ function initDropdowns() {
 
 // Toggle panels open or closed
 function toggleAccordion() {
-    this.classList.toggle("active");
-    var panel = this.nextElementSibling;
+    Array.from(document.getElementsByClassName("accordion"))
+        .filter((acc) => acc == this || acc.classList.contains("active"))
+        .forEach((acc) => {
+            var panelContainer = acc.nextElementSibling;
 
-    while (panel != null && panel.classList.contains("panel")) {
-        if (panel.style.maxHeight)
-            panel.style.maxHeight = null;
-        else
-            panel.style.maxHeight = panel.scrollHeight + "px";
+            acc.classList.toggle("active");
 
-        panel = panel.nextElementSibling;
-    }
+            if (panelContainer.style.maxHeight)
+                panelContainer.style.maxHeight = null;
+            else
+                panelContainer.style.maxHeight = (panelContainer.parentElement.offsetHeight - 180) + "px";
+        });
 }
 
 function assignAccordionBehavior(acc) {
@@ -274,9 +275,9 @@ function assignAccordionBehavior(acc) {
     if (acc.id == "creatures" || acc.id == "aoe")
         panelBehavior = createToken;
     else if (acc.id == "maps")
-        panelBehavior = openMap;
+        panelBehavior = toggleMap;
 
-    var panel = acc.nextElementSibling;
+    var panel = acc.nextElementSibling.children[0];
     while (panel != null && panel.classList.contains("panel")) {
         panel.children[0].addEventListener("click", panelBehavior);
         panel = panel.nextElementSibling;
@@ -290,7 +291,7 @@ const DEFAULT_BACKGROUND_IMAGE = "url(\"../../Assets/Misc/blank.png\")";
 
 let map_token = null;
 
-function openMap(event) {
+function toggleMap(event) {
     let map = event.target;
 
     if (currentMode === modes.tmap) return;
