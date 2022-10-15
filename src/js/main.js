@@ -319,6 +319,7 @@ function startTmap() {
 
     createMapToken(); // Must run before setting background image to default
     showSizeSlider();
+    hideRotateSlider();
     canvas.style.backgroundImage = DEFAULT_BACKGROUND_IMAGE;
 
     if (canvas.style.backgroundSize)
@@ -340,7 +341,10 @@ function endTmap() {
         map_token = null;
     }
 
-    hideSizeSlider();
+    if (selected.length > 0)
+        showRotateSlider();
+    else
+        hideSizeSlider();
 
     if (document.querySelector(".tmap").classList.contains("active"))
         document.querySelector(".tmap").classList.remove("active");
@@ -485,6 +489,8 @@ function endSelect() {
 }
 
 function addTokenToSelected(token) {
+    if (currentMode === modes.tmap) return;
+
     selected = selected.filter((x) => x != token); // Clear out existing references to same token
     selected.splice(0, 0, token);
 

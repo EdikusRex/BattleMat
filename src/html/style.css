@@ -96,7 +96,7 @@ button.opt {
 }
 
 .slider {
-    -webkit-appearance: none;
+    appearance: none;
     width: 400px;
     height: 65px;
     border-radius: 50px;
@@ -165,6 +165,7 @@ div.menus:hover {
     transition: 0.4s;
     text-align: center;
     font-size: 20px;
+    margin-top: 5px;
 }
 
 #creatures {
