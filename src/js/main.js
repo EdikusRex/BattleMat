@@ -162,6 +162,12 @@ function clearCanvas() {
 
 // ---------- Buttons ---------- //
 function initButtons() {
+    initNav();
+    initNavSecondary();
+    initSliders();
+}
+
+function initNav() {
     // Init color selection buttons
     Array.from(document.querySelectorAll(".clr")).forEach(clr => {
         clr.addEventListener("click", () => {
@@ -198,7 +204,48 @@ function initButtons() {
     document.querySelector(".sel").addEventListener("click", () => {
         changeMode(modes.select);
     });
+}
 
+function initNavSecondary() {
+    // Remove example button
+    let nav = document.querySelector(".nav-secondary");
+    if (nav.firstElementChild)
+        nav.removeChild(nav.firstElementChild);
+
+    // --------------------------------------------------------------
+    // temporary - factor out when secondary nav is modularized
+    let slider = document.querySelector(".slider");
+
+    let plus = document.createElement("button");
+    plus.classList.add("opt", "plus");
+    plus.textContent = "+";
+    plus.addEventListener("click", () => {
+        slider.value = parseInt(slider.value) + 10;
+        resizeSelected(slider);
+    });
+    nav.appendChild(plus);
+
+    let minus = document.createElement("button");
+    minus.classList.add("opt", "minus");
+    minus.textContent = "-";
+    minus.addEventListener("click", () => {
+        slider.value -= 10;
+        resizeSelected(slider);
+    });
+    nav.appendChild(minus);
+    // --------------------------------------------------------------
+}
+
+// Empties nav-secondary, allowing it to be filled with new buttons
+function clearNavSecondary() {
+    let nav = document.querySelector(".nav-secondary");
+
+    while (nav.firstElementChild) {
+        nav.firstElementChild.remove();
+    }
+}
+
+function initSliders() {
     document.getElementById("sizeSlider").oninput = function() {
         if (currentMode === modes.tmap)
             resizeMap(this);
@@ -341,9 +388,10 @@ function endTmap() {
         map_token = null;
     }
 
-    if (selected.length > 0)
+    if (selected.length > 0) {
         showRotateSlider();
-    else
+        updateSliders(selected[0]);
+    } else
         hideSizeSlider();
 
     if (document.querySelector(".tmap").classList.contains("active"))
