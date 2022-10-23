@@ -29,7 +29,7 @@ body {
 
 .nav-secondary {
     width: 70px;
-    height: 230px;
+    height: 0px;
     position: fixed;
     top: 80px;
     right: 10px;

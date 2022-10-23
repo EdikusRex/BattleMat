@@ -163,7 +163,6 @@ function clearCanvas() {
 // ---------- Buttons ---------- //
 function initButtons() {
     initNav();
-    initNavSecondary();
     initSliders();
 }
 
@@ -206,45 +205,6 @@ function initNav() {
     });
 }
 
-function initNavSecondary() {
-    // Remove example button
-    let nav = document.querySelector(".nav-secondary");
-    if (nav.firstElementChild)
-        nav.removeChild(nav.firstElementChild);
-
-    // --------------------------------------------------------------
-    // temporary - factor out when secondary nav is modularized
-    let slider = document.querySelector(".slider");
-
-    let plus = document.createElement("button");
-    plus.classList.add("opt", "plus");
-    plus.textContent = "+";
-    plus.addEventListener("click", () => {
-        slider.value = parseInt(slider.value) + 10;
-        resizeSelected(slider);
-    });
-    nav.appendChild(plus);
-
-    let minus = document.createElement("button");
-    minus.classList.add("opt", "minus");
-    minus.textContent = "-";
-    minus.addEventListener("click", () => {
-        slider.value -= 10;
-        resizeSelected(slider);
-    });
-    nav.appendChild(minus);
-    // --------------------------------------------------------------
-}
-
-// Empties nav-secondary, allowing it to be filled with new buttons
-function clearNavSecondary() {
-    let nav = document.querySelector(".nav-secondary");
-
-    while (nav.firstElementChild) {
-        nav.firstElementChild.remove();
-    }
-}
-
 function initSliders() {
     document.getElementById("sizeSlider").oninput = function() {
         if (currentMode === modes.tmap)
@@ -273,6 +233,8 @@ function updateSliders(token) {
 function showSizeSlider() {
     if (document.querySelector(".slidecontainer").classList.contains("hidden"))
         document.querySelector(".slidecontainer").classList.remove("hidden");
+
+    populateNavSecondary(secondaryModes.resize);
 }
 
 function showRotateSlider() {
@@ -283,6 +245,8 @@ function showRotateSlider() {
 function hideSizeSlider() {
     if (!document.querySelector(".slidecontainer").classList.contains("hidden"))
         document.querySelector(".slidecontainer").classList.add("hidden");
+
+    clearNavSecondary(secondaryModes.resize);
 }
 
 function hideRotateSlider() {
@@ -290,6 +254,63 @@ function hideRotateSlider() {
         document.querySelector(".rotateslider").classList.add("hidden");
 }
 // ---------- Buttons ---------- //
+
+
+// ---------- Secondary Nav ---------- //
+const secondaryModes = {
+    none: "none",
+    resize: "resize"
+};
+let secondaryCurrentMode = secondaryModes.none;
+
+// nav-secondary children should be tag=button and have class=opt
+function populateNavSecondary(newMode) {
+    if (newMode === secondaryCurrentMode) return;
+
+    secondaryCurrentMode = newMode;
+    switch (newMode) {
+        case secondaryModes.resize:
+            addResizeButtons();
+            break;
+    }
+}
+
+// Empties nav-secondary, allowing it to be filled with new buttons
+function clearNavSecondary(mode) {
+    // May decide this check is not necessary later
+    if (mode !== secondaryCurrentMode) return;
+
+    let nav = document.querySelector(".nav-secondary");
+
+    while (nav.firstElementChild) {
+        nav.firstElementChild.remove();
+    }
+    secondaryCurrentMode = secondaryModes.none;
+}
+
+function addResizeButtons() {
+    let nav = document.querySelector(".nav-secondary");
+    let slider = document.querySelector(".slider");
+
+    let plus = document.createElement("button");
+    plus.classList.add("opt", "plus");
+    plus.textContent = "+";
+    plus.addEventListener("click", () => {
+        slider.value = parseInt(slider.value) + 10;
+        resizeSelected(slider);
+    });
+    nav.appendChild(plus);
+
+    let minus = document.createElement("button");
+    minus.classList.add("opt", "minus");
+    minus.textContent = "-";
+    minus.addEventListener("click", () => {
+        slider.value -= 10;
+        resizeSelected(slider);
+    });
+    nav.appendChild(minus);
+}
+// ---------- Secondary Nav ---------- //
 
 
 // ---------- Dropdowns ---------- //
