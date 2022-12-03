@@ -329,6 +329,7 @@ function toggleAccordion() {
             var panelContainer = acc.nextElementSibling;
 
             acc.classList.toggle("active");
+            toggleMenuHeight(acc.classList.contains("active"));
 
             if (panelContainer.style.maxHeight)
                 panelContainer.style.maxHeight = null;
@@ -349,6 +350,18 @@ function assignAccordionBehavior(acc) {
     while (panel != null && panel.classList.contains("panel")) {
         panel.children[0].addEventListener("click", panelBehavior);
         panel = panel.nextElementSibling;
+    }
+}
+
+function toggleMenuHeight(accordionActive) {
+    let menus = document.querySelector(".menus");
+
+    if (accordionActive) {
+        menus.style.height = "95%";
+        menus.style.overflowY = "hidden";
+    } else {
+        menus.style.height = 0;
+        menus.style.overflowY = "visible";
     }
 }
 // ---------- Dropdowns ---------- //
