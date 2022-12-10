@@ -7,7 +7,8 @@ def add_option(soup, acc, path):
         if not os.path.isfile(os.path.join(path, item)):
             continue
 
-        item = item.replace("'", "\\'").replace(" ", "\ ")
+        item = item.replace("'", "\\'").replace(" ", "\ ") \
+            .replace("(", "\\(").replace(")", "\\)")
         panel = soup.new_tag("div", attrs={"class": "panel"})
         option = soup.new_tag("button", attrs={
             "class": "option", "style": f"background-image: url(../../{path}/{item})"})
