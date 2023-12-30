@@ -1,9 +1,8 @@
-// ---------- Dropdowns ---------- //
 function initDropdowns() {
     Array.from(document.getElementsByClassName("accordion")).forEach((acc) => {
-        acc.addEventListener("click", toggleAccordion);
-        assignAccordionBehavior(acc);
-    });
+        acc.addEventListener("click", toggleAccordion)
+        assignAccordionBehavior(acc)
+    })
 }
 
 // Toggle panels open or closed
@@ -11,42 +10,41 @@ function toggleAccordion() {
     Array.from(document.getElementsByClassName("accordion"))
         .filter((acc) => acc == this || acc.classList.contains("active"))
         .forEach((acc) => {
-            var panelContainer = acc.nextElementSibling;
+            var panelContainer = acc.nextElementSibling
 
-            acc.classList.toggle("active");
-            setMenuHeight(acc.classList.contains("active"));
+            acc.classList.toggle("active")
+            setMenuHeight(acc.classList.contains("active"))
 
             if (panelContainer.style.maxHeight)
-                panelContainer.style.maxHeight = null;
+                panelContainer.style.maxHeight = null
             else
-                panelContainer.style.maxHeight = (panelContainer.parentElement.offsetHeight - 180) + "px";
-        });
+                panelContainer.style.maxHeight = (panelContainer.parentElement.offsetHeight - 180) + "px"
+        })
 }
 
 function assignAccordionBehavior(acc) {
-    let panelBehavior = null;
+    let panelBehavior = null
 
     if (acc.id == "creatures" || acc.id == "aoe")
-        panelBehavior = createToken;
+        panelBehavior = createToken
     else if (acc.id == "maps")
-        panelBehavior = setMap;
+        panelBehavior = setMap
 
-    var panel = acc.nextElementSibling.children[0];
+    var panel = acc.nextElementSibling.children[0]
     while (panel != null && panel.classList.contains("panel")) {
-        panel.children[0].addEventListener("click", panelBehavior);
-        panel = panel.nextElementSibling;
+        panel.children[0].addEventListener("click", panelBehavior)
+        panel = panel.nextElementSibling
     }
 }
 
 function setMenuHeight(accordionActive) {
-    let menus = document.querySelector(".menus");
+    let menus = document.querySelector(".menus")
 
     if (accordionActive) {
-        menus.style.height = "95%";
-        menus.style.overflowY = "hidden";
+        menus.style.height = "95%"
+        menus.style.overflowY = "hidden"
     } else {
-        menus.style.height = 0;
-        menus.style.overflowY = "visible";
+        menus.style.height = 0
+        menus.style.overflowY = "visible"
     }
 }
-// ---------- Dropdowns ---------- //

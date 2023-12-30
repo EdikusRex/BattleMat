@@ -11,16 +11,6 @@
  </head>
  <body>
   <div class="nav">
-   <div class="clr" style="background-color: #000">
-   </div>
-   <div class="clr" style="background-color: #d60b0b">
-   </div>
-   <div class="clr" style="background-color: #2a11cf">
-   </div>
-   <div class="clr" style="background-color: #24d102">
-   </div>
-   <div class="clr" style="background-color: #fff">
-   </div>
    <button class="opt draw">
     draw
    </button>
@@ -29,6 +19,9 @@
    </button>
    <button class="opt tmap">
     map
+   </button>
+   <button class="opt tgrid">
+    grid
    </button>
    <button class="opt sel">
     sel
@@ -45,7 +38,11 @@
   <div class="rotateslider">
    <input class="slider rotator" id="rotateSlider" max="360" min="0" type="range" value="0"/>
   </div>
-  <canvas class="canvas" id="canvas">
+  <canvas class="draw-canvas" id="draw-canvas">
+  </canvas>
+  <canvas class="grid" id="grid">
+  </canvas>
+  <canvas class="map" id="map">
   </canvas>
   <div class="menus" id="menus">
    <button class="accordion" id="creatures">
@@ -222,7 +219,7 @@
    </button>
    <div class="panelContainer">
     <div class="panel">
-     <button class="option" style="background-image: url(../../Assets/Maps/Grid/grid.png)">
+     <button class="option" style="background-image: url(../../Assets/Maps/Battle\ map,\ eladrin.png)">
      </button>
     </div>
     <div class="panel">
@@ -394,13 +391,15 @@
   </div>
   <script src="../js/buttons.js">
   </script>
-  <script src="../js/canvas.js">
+  <script src="../js/drawing.js">
+  </script>
+  <script src="../js/dropdowns.js">
   </script>
   <script src="../js/map.js">
   </script>
-  <script src="../js/tokens.js">
+  <script src="../js/grid.js">
   </script>
-  <script src="../js/dropdowns.js">
+  <script src="../js/tokens.js">
   </script>
   <script src="../js/main.js">
   </script>
