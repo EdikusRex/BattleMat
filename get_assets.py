@@ -31,7 +31,6 @@ def main():
     creatures_acc: Tag = soup.find(id="creatures")
 
     map_path: str = "Assets/Maps"
-    grid_path: str = "Assets/Maps/Grid"
     maps_acc: Tag = soup.find(id="maps")
 
     aoe_path: str = "Assets/Misc/AoE"
@@ -39,7 +38,6 @@ def main():
 
     add_option(soup, creatures_acc, player_path)
     add_option(soup, creatures_acc, creature_path)
-    add_option(soup, maps_acc, grid_path)
     add_option(soup, maps_acc, map_path)
     add_option(soup, aoe_acc, aoe_path)
 

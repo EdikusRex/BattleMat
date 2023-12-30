@@ -1,37 +1,40 @@
-// --------- Canvas -------- //
+const drawCanvas = document.getElementById("draw-canvas")
+const ctx = drawCanvas.getContext("2d")
 const ERASER_CURSOR = "url(\"../../Assets/Misc/square.png\")"
 
 let mouse_drawing = false // This is necessary for when cursor leaves the canvas while drawing
 let lines = [, ]
 
 function initCanvas() {
-    canvas.style.backgroundImage = DEFAULT_BACKGROUND_IMAGE
+    drawCanvas.height = window.innerHeight
+    drawCanvas.width = window.innerWidth
+    ctx.lineWidth = 5
     clearStrokeColor()
 
     // Init touch drawing
-    canvas.addEventListener("touchstart", function(event) {
+    drawCanvas.addEventListener("touchstart", function(event) {
         Array.from(event.touches).forEach(e => lineStart(e))
     }, false)
-    canvas.addEventListener("touchmove", function(event) {
+    drawCanvas.addEventListener("touchmove", function(event) {
         event.preventDefault()
         Array.from(event.touches).forEach(e => lineMove(e))
     }, false)
-    canvas.addEventListener("touchend", function(event) {
+    drawCanvas.addEventListener("touchend", function(event) {
         Array.from(event.changedTouches).forEach(e => lineEnd(e))
     }, false)
 
     // Init mouse drawing
-    canvas.addEventListener("mousedown", lineStart)
-    canvas.addEventListener("mousemove", lineMove)
-    canvas.addEventListener("mouseup", lineEnd)
+    drawCanvas.addEventListener("mousedown", lineStart)
+    drawCanvas.addEventListener("mousemove", lineMove)
+    drawCanvas.addEventListener("mouseup", lineEnd)
 }
 
 function lineStart(event) {
     if (event.type == "mousedown")
         mouse_drawing = true
 
-    let x_pos = event.pageX - canvas.offsetLeft
-    let y_pos = event.pageY - canvas.offsetTop
+    let x_pos = event.pageX - drawCanvas.offsetLeft
+    let y_pos = event.pageY - drawCanvas.offsetTop
 
     ctx.beginPath()
 
@@ -54,8 +57,8 @@ function lineMove(event) {
         return
     }
 
-    let x_pos = event.pageX - canvas.offsetLeft
-    let y_pos = event.pageY - canvas.offsetTop
+    let x_pos = event.pageX - drawCanvas.offsetLeft
+    let y_pos = event.pageY - drawCanvas.offsetTop
 
     ctx.moveTo(lines[event.identifier].x, lines[event.identifier].y)
     ctx.lineTo(x_pos, y_pos)
@@ -82,14 +85,13 @@ function clearStrokeColor() {
 
 function startErase() {
     clearStrokeColor()
-    canvas.style.cursor = `${ERASER_CURSOR} 40 40, auto`
+    drawCanvas.style.cursor = `${ERASER_CURSOR} 40 40, auto`
 }
 
 function endErase() {
-    canvas.style.cursor = "auto"
+    drawCanvas.style.cursor = "auto"
 }
 
 function clearCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height)
 }
-// --------- Canvas -------- //

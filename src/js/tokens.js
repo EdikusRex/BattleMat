@@ -1,4 +1,3 @@
-// ---------- Tokens ---------- //
 const SCALE_START = 80
 
 let selected = []
@@ -96,8 +95,6 @@ function startSelect() {
 function endSelect() {
     selected.forEach((x) => { x.classList.remove("selected") })
     selected = []
-    hideSizeSlider()
-    hideRotateSlider()
 }
 
 function addTokenToSelected(token) {
@@ -109,8 +106,6 @@ function addTokenToSelected(token) {
     if (!token.classList.contains("selected"))
         token.classList.add("selected")
 
-    showSizeSlider()
-    showRotateSlider()
     updateSliders(token)
 }
 
@@ -134,4 +129,3 @@ function rotateSelected(slider) {
         x.style.transform = maintain_size + "rotate(" + slider.value + "deg)"
     })
 }
-// ---------- Tokens ---------- //

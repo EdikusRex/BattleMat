@@ -14,6 +14,7 @@
         <button class="opt draw">draw</button>
         <button class="opt erase">erase</button>
         <button class="opt tmap">map</button>
+        <button class="opt tgrid">grid</button>
         <button class="opt sel">sel</button>
         <button class="opt clear">clr</button>
     </div>
@@ -29,7 +30,9 @@
         <input type="range" min="0" max="360" value="0" class="slider rotator" id="rotateSlider">
     </div>
 
-    <canvas class="canvas" id="canvas"></canvas>
+    <canvas class="draw-canvas" id="draw-canvas"></canvas>
+    <canvas class="grid" id="grid"></canvas>
+    <canvas class="map" id="map"></canvas>
 
     <div id="menus" class="menus">
         <button class="accordion" id="creatures">Creatures</button>
@@ -41,9 +44,10 @@
     </div>
 
     <script src="../js/buttons.js"></script>
-    <script src="../js/canvas.js"></script>
+    <script src="../js/drawing.js"></script>
     <script src="../js/dropdowns.js"></script>
     <script src="../js/map.js"></script>
+    <script src="../js/grid.js"></script>
     <script src="../js/tokens.js"></script>
     <script src="../js/main.js"></script>
 </body>

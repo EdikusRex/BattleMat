@@ -1,4 +1,3 @@
-// ---------- Dropdowns ---------- //
 function initDropdowns() {
     Array.from(document.getElementsByClassName("accordion")).forEach((acc) => {
         acc.addEventListener("click", toggleAccordion)
@@ -49,4 +48,3 @@ function setMenuHeight(accordionActive) {
         menus.style.overflowY = "visible"
     }
 }
-// ---------- Dropdowns ---------- //

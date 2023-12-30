@@ -7,14 +7,28 @@ body {
     overflow: hidden;
 }
 
-.canvas {
+.draw-canvas {
+    z-index: -1;
+    background-size: 100% 100%;
+    position: absolute;
+}
+
+.grid {
+    z-index: -2;
+    background-size: 100% 100%;
+    position: absolute;
+}
+
+.map {
+    z-index: -3;
     background-size: 100% 100%;
     background-color: #444;
     background-repeat: no-repeat;
+    position: absolute;
 }
 
 .nav {
-    width: 400px;
+    width: 480px;
     height: 50px;
     position: fixed;
     top: 10px;

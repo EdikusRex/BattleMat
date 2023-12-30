@@ -1,11 +1,11 @@
-// ------------- Buttons ------------- //
 // Each mode should have associated startMode and endMode functions.
 const modes = {
     none: Symbol("none"),
     draw: Symbol("draw"),
     erase: Symbol("erase"),
     select: Symbol("select"),
-    tmap: Symbol("tmap")
+    tmap: Symbol("tmap"),
+    tgrid: Symbol("tgrid"),
 }
 let currentMode = modes.none
 
@@ -35,6 +35,10 @@ function changeMode(newMode) {
             document.querySelector(".tmap").classList.remove("active")
             endTmap()
             break
+        case modes.tgrid:
+            document.querySelector(".tgrid").classList.remove("active")
+            endTgrid()
+            break
     }
 
     if (newMode === currentMode) {
@@ -61,6 +65,10 @@ function changeMode(newMode) {
             document.querySelector(".tmap").classList.add("active")
             startTmap()
             break
+        case modes.tgrid:
+            document.querySelector(".tgrid").classList.add("active")
+            startTgrid()
+            break
     }
 }
 
@@ -76,14 +84,26 @@ function initNav() {
     document.querySelector(".clear").addEventListener("click", () => {
         if (currentMode === modes.select)
             deleteSelected()
-        else if (currentMode === modes.tmap)
+        else if (currentMode === modes.tmap) {
             resetMap()
-        else if (currentMode === modes.draw || currentMode === modes.erase)
+            changeMode(modes.none)
+        } else if (currentMode === modes.tgrid) {
+            resetGrid()
+            changeMode(modes.none)
+        } else if (currentMode === modes.draw)
             clearCanvas()
+        else if (currentMode === modes.erase) {
+            clearCanvas()
+            changeMode(modes.none)
+        }
     })
 
     document.querySelector(".tmap").addEventListener("click", () => {
         changeMode(modes.tmap)
+    })
+
+    document.querySelector(".tgrid").addEventListener("click", () => {
+        changeMode(modes.tgrid)
     })
 
     document.querySelector(".sel").addEventListener("click", () => {
@@ -95,6 +115,8 @@ function initSliders() {
     document.getElementById("sizeSlider").oninput = function() {
         if (currentMode === modes.tmap)
             resizeMap(this)
+        else if (currentMode === modes.tgrid)
+            resizeGrid(this)
         else
             resizeSelected(this)
     }
@@ -135,7 +157,6 @@ function hideRotateSlider() {
     if (!document.querySelector(".rotateslider").classList.contains("hidden"))
         document.querySelector(".rotateslider").classList.add("hidden")
 }
-// ------------- Buttons ------------- //
 
 
 // ---------- Secondary Nav ---------- //
@@ -147,6 +168,7 @@ function populateNavSecondary(mode) {
             break
         case modes.select:
         case modes.tmap:
+        case modes.tgrid:
             addResizeButtons()
             break
     }
@@ -158,6 +180,8 @@ function clearNavSecondary() {
     while (nav.firstElementChild) {
         nav.firstElementChild.remove()
     }
+    hideSizeSlider()
+    hideRotateSlider()
 }
 
 function addClrButtons() {
@@ -183,6 +207,8 @@ function addResizeButtons() {
             resizeSelected(slider)
         else if (currentMode === modes.tmap)
             resizeMap(slider)
+        else if (currentMode === modes.tgrid)
+            resizeGrid(slider)
     }
 
     let plus = document.createElement("button")
@@ -197,4 +223,3 @@ function addResizeButtons() {
     minus.addEventListener("click", () => { updateSize(-10) })
     nav.appendChild(minus)
 }
-// ---------- Secondary Nav ---------- //
