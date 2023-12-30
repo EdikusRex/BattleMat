@@ -1,4 +1,5 @@
 // This file has a dependency on `map.js` which should be imported into html before this file.
+// Grid generator: https://hamhambone.github.io/hexgrid/
 
 const gridCanvas = document.getElementById("grid")
 const GRID_BACKGROUND_IMAGE = "url(\"../../Assets/Misc/grid.png\")"
