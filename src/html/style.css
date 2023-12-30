@@ -14,11 +14,11 @@ body {
 }
 
 .nav {
-    width: 400px;
+    width: 680px;
     height: 50px;
     position: fixed;
     top: 10px;
-    left: 175px;
+    right: 10px;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -31,8 +31,8 @@ body {
     width: 70px;
     height: 0px;
     position: fixed;
-    top: 75px;
-    left: 180px;
+    top: 80px;
+    right: 10px;
     opacity: .5;
     transition: opacity .5s;
     z-index: 999;
@@ -80,27 +80,29 @@ button.opt {
     transform: scale(1.2);
 }
 
-button.active:not(.accordion) {
+.tmap.active,
+.erase.active,
+.sel.active {
     background-color: #5ae63f;
 }
 
 .rotateslider {
     position: fixed;
     top: 150px;
-    left: 270px;
+    right: 250px;
     z-index: 999;
 }
 
 .slidecontainer {
     position: fixed;
     top: 75px;
-    left: 270px;
+    right: 150px;
     z-index: 999;
 }
 
 .slider {
     appearance: none;
-    width: 370px;
+    width: 400px;
     height: 65px;
     border-radius: 50px;
     background: #d3d3d3;
@@ -216,5 +218,5 @@ button.option {
 }
 
 .selected {
-    border: 4px solid rgb(240, 230, 140);
+    border: 10px solid rgb(240, 230, 140);
 }
