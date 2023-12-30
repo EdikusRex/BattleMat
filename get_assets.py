@@ -1,8 +1,8 @@
-from bs4 import BeautifulSoup, element
+from bs4 import BeautifulSoup, element, Tag
 import os
 
 
-def add_option(soup, acc, path):
+def add_option(soup: BeautifulSoup, acc: Tag, path: str):
     for item in os.listdir(path):
         if not os.path.isfile(os.path.join(path, item)):
             continue
@@ -26,16 +26,16 @@ def main():
     soup = BeautifulSoup(f, "html.parser")
     f.close()
 
-    creature_path = "Assets/Creatures"
-    player_path = "Assets/Creatures/Players"
-    creatures_acc = soup.find(id="creatures")
+    creature_path: str = "Assets/Creatures"
+    player_path: str = "Assets/Creatures/Players"
+    creatures_acc: Tag = soup.find(id="creatures")
 
-    map_path = "Assets/Maps"
-    grid_path = "Assets/Maps/Grid"
-    maps_acc = soup.find(id="maps")
+    map_path: str = "Assets/Maps"
+    grid_path: str = "Assets/Maps/Grid"
+    maps_acc: Tag = soup.find(id="maps")
 
-    aoe_path = "Assets/Misc/AoE"
-    aoe_acc = soup.find(id="aoe")
+    aoe_path: str = "Assets/Misc/AoE"
+    aoe_acc: Tag = soup.find(id="aoe")
 
     add_option(soup, creatures_acc, player_path)
     add_option(soup, creatures_acc, creature_path)
