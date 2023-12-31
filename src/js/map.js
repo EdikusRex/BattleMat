@@ -1,5 +1,6 @@
 const mapCanvas = document.getElementById("map")
 const DEFAULT_BACKGROUND_IMAGE = "url(\"../../Assets/Misc/blank.png\")"
+const CANVAS_SCALAR = 3
 
 let map_token = null
 
@@ -31,45 +32,46 @@ function startTmap() {
         changeMode(modes.none)
         return
     }
-    map_token = startTCanvas(mapCanvas)
+    map_token = startTCanvas(mapCanvas, CANVAS_SCALAR)
     mapCanvas.style.backgroundImage = DEFAULT_BACKGROUND_IMAGE
 }
 
 function endTmap() {
     if (!map_token) return
-    endTCanvas(mapCanvas, map_token)
+    endTCanvas(mapCanvas, map_token, CANVAS_SCALAR)
 }
 
 function resizeMap(slider) {
-    resizeCanvasBg(mapCanvas, map_token, slider)
+    resizeCanvasBg(mapCanvas, map_token, slider, CANVAS_SCALAR)
 }
 
 
 // ------- Common Background Manipulation ------- //
-function resizeCanvasBg(canvas, token, slider) {
-    canvas.style.backgroundSize = slider.value + "%"
-    token.height = canvas.height * slider.value * 0.01
-    token.width = canvas.width * slider.value * 0.01
+function resizeCanvasBg(canvas, token, slider, scalar) {
+    let size = slider.value * scalar
+    canvas.style.backgroundSize = size + "%"
+    token.height = canvas.height * size * 0.01
+    token.width = canvas.width * size * 0.01
 }
 
-function startTCanvas(canvas) {
+function startTCanvas(canvas, scalar) {
     token = createBackgroundToken(canvas)
     token.src = canvas.style.backgroundImage.slice(5, -2)
 
     showSizeSlider()
     if (canvas.style.backgroundSize)
-        document.getElementById("sizeSlider").value = canvas.style.backgroundSize.split("%")[0]
+        document.getElementById("sizeSlider").value = canvas.style.backgroundSize.split("%")[0] / scalar
     else
         document.getElementById("sizeSlider").value = 100
 
     return token
 }
 
-function endTCanvas(canvas, token) {
+function endTCanvas(canvas, token, scalar) {
     canvas.style.backgroundImage = "url(" + token.src + ")"
     canvas.style.backgroundPosition = token.style.left + " " + token.style.top
-    canvas.style.backgroundSize = document.getElementById("sizeSlider").value + "% " +
-        document.getElementById("sizeSlider").value + "%"
+    canvas.style.backgroundSize = (document.getElementById("sizeSlider").value * scalar) + "% " +
+        (document.getElementById("sizeSlider").value * scalar) + "%"
     token.remove()
     token = null
 }

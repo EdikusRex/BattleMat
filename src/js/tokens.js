@@ -1,4 +1,4 @@
-const SCALE_START = 80
+const DEFAULT_SIZE = 80
 
 let selected = []
 let drags = [, ]
@@ -8,7 +8,7 @@ let mouse_dragging = false // Prevents token drag when mouse isn't clicked
 
 // Pass null to allow caller to handle style.src
 function createToken(event) {
-    var token = new Image(SCALE_START, SCALE_START)
+    var token = new Image(DEFAULT_SIZE, DEFAULT_SIZE)
 
     token.id = uid_counter++
         token.style.left = 300 + 'px'
@@ -117,7 +117,7 @@ function deleteSelected() {
 
 function resizeSelected(slider) {
     selected.forEach((x) => {
-        var scale = slider.value / SCALE_START
+        var scale = 6 / (10 * Math.log(130 / slider.value))
         var maintain_rotation = x.style.transform.split(" ")[1]
         x.style.transform = "scale(" + scale + ")" + maintain_rotation
     })
@@ -128,4 +128,16 @@ function rotateSelected(slider) {
         var maintain_size = x.style.transform.split(" ")[0]
         x.style.transform = maintain_size + "rotate(" + slider.value + "deg)"
     })
+}
+
+// Moves sliders to match current token size
+function updateSliders(token) {
+    let size = token.style.transform.split(" ")[0].slice(6, -1)
+    console.log(size)
+    document.getElementById("sizeSlider").value = 130 * Math.pow(Math.E, (-(6 / 10) / size))
+
+    if (token.style.transform)
+        document.getElementById("rotateSlider").value = token.style.transform.split(" ")[1].slice(7, -4)
+    else
+        document.getElementById("rotateSlider").value = 0
 }
