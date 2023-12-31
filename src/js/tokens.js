@@ -14,6 +14,7 @@ function createToken(event) {
         token.style.left = 300 + 'px'
     token.style.top = 200 + 'px'
     token.style.transform = "scale(1) rotate(0)"
+    if (z_layer == 900) resetZLayer()
     token.style.zIndex = z_layer++
         token.classList.add("token")
 
@@ -55,10 +56,7 @@ function dragStart(event) {
 
     // Place token above everything else.
     // If Z level maximum is reached, reset z order of all tokens.
-    if (z_layer == 900) {
-        z_layer = 0
-        Array.from(document.getElementsByClassName("token")).sort((a, b) => { return a.style.zIndex - b.style.zIndex }).forEach((x) => x.style.zIndex = z_layer++)
-    }
+    if (z_layer == 900) resetZLayer()
     token.style.zIndex = z_layer++
 
         // This accounts for the offset between where user clicks and top left corner of the token.
@@ -66,6 +64,11 @@ function dragStart(event) {
             dx: event.clientX - token.style.left.slice(0, -2),
             dy: event.clientY - token.style.top.slice(0, -2)
         }
+}
+
+function resetZLayer() {
+    z_layer = 0
+    Array.from(document.getElementsByClassName("token")).sort((a, b) => { return a.style.zIndex - b.style.zIndex }).forEach((x) => x.style.zIndex = z_layer++)
 }
 
 function drag(event) {
@@ -136,10 +139,17 @@ function rotateSelected(slider) {
     })
 }
 
+function sendSelectedToBottom() {
+    selected.forEach((x) => {
+        x.style.zIndex = -1
+    })
+    resetZLayer()
+}
+
+
 // Moves sliders to match current token size
 function updateSliders(token) {
     let size = token.style.transform.split(" ")[0].slice(6, -1)
-    console.log(size)
     document.getElementById("sizeSlider").value = 130 * Math.pow(Math.E, (-(6 / 10) / size))
 
     if (token.style.transform)

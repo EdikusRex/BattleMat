@@ -158,10 +158,13 @@ function populateNavSecondary(mode) {
         case modes.draw:
             addClrButtons()
             break
-        case modes.select:
         case modes.tmap:
         case modes.tgrid:
             addResizeButtons()
+            break
+        case modes.select:
+            addResizeButtons()
+            addSendToBottomButton()
             break
     }
 }
@@ -214,4 +217,14 @@ function addResizeButtons() {
     minus.textContent = "-"
     minus.addEventListener("click", () => { updateSize(-5) })
     nav.appendChild(minus)
+}
+
+function addSendToBottomButton() {
+    let nav = document.querySelector(".nav-secondary")
+
+    let bottom = document.createElement("button")
+    bottom.classList.add("opt", "bottom")
+    bottom.textContent = "↓"
+    bottom.addEventListener("click", () => { sendSelectedToBottom() })
+    nav.appendChild(bottom)
 }
