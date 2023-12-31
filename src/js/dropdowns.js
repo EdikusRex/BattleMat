@@ -25,7 +25,7 @@ function toggleAccordion() {
 function assignAccordionBehavior(acc) {
     let panelBehavior = null
 
-    if (acc.id == "creatures" || acc.id == "aoe")
+    if (acc.id == "creatures" || acc.id == "spoilers")
         panelBehavior = createToken
     else if (acc.id == "maps")
         panelBehavior = setMap
