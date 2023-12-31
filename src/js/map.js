@@ -23,6 +23,7 @@ function setMap(event) {
 
 function resetMap() {
     resetCanvas(mapCanvas)
+    mapCanvas.style.backgroundImage = DEFAULT_BACKGROUND_IMAGE
     map_token.remove()
     map_token = null
 }
@@ -77,7 +78,6 @@ function endTCanvas(canvas, token, scalar) {
 }
 
 function resetCanvas(canvas) {
-    canvas.style.backgroundImage = DEFAULT_BACKGROUND_IMAGE
     canvas.style.backgroundSize = "100% 100%"
     canvas.style.backgroundPosition = "0px 0px"
 }

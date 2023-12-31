@@ -111,6 +111,8 @@ function initNav() {
     })
 }
 
+
+// -------------- Sliders -------------- //
 function initSliders() {
     document.getElementById("sizeSlider").oninput = function() {
         if (currentMode === modes.tmap)

@@ -88,11 +88,17 @@ function dragEnd(event) {
 
 function startSelect() {
     selected = []
+    enableDragSelect()
     showSizeSlider()
     showRotateSlider()
 }
 
 function endSelect() {
+    clearSelected()
+    disableDragSelect()
+}
+
+function clearSelected() {
     selected.forEach((x) => { x.classList.remove("selected") })
     selected = []
 }
@@ -140,4 +146,91 @@ function updateSliders(token) {
         document.getElementById("rotateSlider").value = token.style.transform.split(" ")[1].slice(7, -4)
     else
         document.getElementById("rotateSlider").value = 0
+}
+
+
+// -------------- Drag Select -------------- //
+const SELECT_SRC = "../../Assets/Misc/square.png"
+
+var mouse_selecting = false
+var selCanvas = null
+var selCtx = null
+var selStartX = 0
+var selStartY = 0
+
+function enableDragSelect() {
+    // Init sel canvas
+    selCanvas = document.createElement('canvas')
+    selCtx = selCanvas.getContext("2d")
+    selCanvas.classList.add("sel-canvas")
+    selCanvas.height = window.innerHeight
+    selCanvas.width = window.innerWidth
+    document.body.appendChild(selCanvas)
+
+    // Init touch selecting
+    selCanvas.addEventListener("touchstart", function(event) {
+        Array.from(event.touches).forEach(e => selStart(e))
+    }, false)
+    selCanvas.addEventListener("touchmove", function(event) {
+        event.preventDefault()
+        Array.from(event.touches).forEach(e => selMove(e))
+    }, false)
+    selCanvas.addEventListener("touchend", function(event) {
+        Array.from(event.changedTouches).forEach(e => selEnd(e))
+    }, false)
+
+    // Init mouse selecting
+    selCanvas.addEventListener("mousedown", selStart)
+    selCanvas.addEventListener("mousemove", selMove)
+    selCanvas.addEventListener("mouseup", selEnd)
+}
+
+function disableDragSelect() {
+    selCanvas.remove()
+}
+
+function selStart(event) {
+    if (event.type == "mousedown")
+        mouse_selecting = true
+    selStartX = event.pageX - selCanvas.offsetLeft
+    selStartY = event.pageY - selCanvas.offsetTop
+    selCanvas.style.zIndex = 999
+}
+
+function selMove(event) {
+    if (event.type == "mousemove" && !mouse_selecting) return
+
+    let event_x = event.pageX - selCanvas.offsetLeft
+    let event_y = event.pageY - selCanvas.offsetTop
+    let selX = [Math.min(selStartX, event_x), Math.max(selStartX, event_x)]
+    let selY = [Math.min(selStartY, event_y), Math.max(selStartY, event_y)]
+
+    clearSelCanvas()
+    selCtx.beginPath();
+    selCtx.rect(selX[0], selY[0], selX[1] - selX[0], selY[1] - selY[0]);
+    selCtx.stroke();
+
+    clearSelected()
+    let tokens = document.querySelectorAll(".token")
+    tokens.forEach((token) => {
+        let tokenX = parseInt(token.style.left.slice(0, -2)) +
+            parseInt((token.style.transform.split(" ")[0].slice(6, -1) * DEFAULT_SIZE / 2))
+        let tokenY = parseInt(token.style.top.slice(0, -2)) +
+            parseInt((token.style.transform.split(" ")[0].slice(6, -1) * DEFAULT_SIZE / 2))
+
+        if (tokenX >= selX[0] && tokenX <= selX[1] &&
+            tokenY >= selY[0] && tokenY <= selY[1])
+            addTokenToSelected(token)
+    })
+}
+
+function selEnd(event) {
+    if (event.type == "mouseup")
+        mouse_selecting = false
+    clearSelCanvas()
+    selCanvas.style.zIndex = -4
+}
+
+function clearSelCanvas() {
+    selCtx.clearRect(0, 0, selCanvas.width, selCanvas.height)
 }
