@@ -111,6 +111,8 @@ function initNav() {
     })
 }
 
+
+// -------------- Sliders -------------- //
 function initSliders() {
     document.getElementById("sizeSlider").oninput = function() {
         if (currentMode === modes.tmap)
@@ -126,16 +128,6 @@ function initSliders() {
 
     hideSizeSlider()
     hideRotateSlider()
-}
-
-// Moves sliders to match current token size
-function updateSliders(token) {
-    document.getElementById("sizeSlider").value = token.style.transform.split(" ")[0].slice(6, -1) * SCALE_START
-
-    if (token.style.transform)
-        document.getElementById("rotateSlider").value = token.style.transform.split(" ")[1].slice(7, -4)
-    else
-        document.getElementById("rotateSlider").value = 0
 }
 
 function showSizeSlider() {
@@ -166,10 +158,13 @@ function populateNavSecondary(mode) {
         case modes.draw:
             addClrButtons()
             break
-        case modes.select:
         case modes.tmap:
         case modes.tgrid:
             addResizeButtons()
+            break
+        case modes.select:
+            addResizeButtons()
+            addSendToBottomButton()
             break
     }
 }
@@ -214,12 +209,22 @@ function addResizeButtons() {
     let plus = document.createElement("button")
     plus.classList.add("opt", "plus")
     plus.textContent = "+"
-    plus.addEventListener("click", () => { updateSize(10) })
+    plus.addEventListener("click", () => { updateSize(5) })
     nav.appendChild(plus)
 
     let minus = document.createElement("button")
     minus.classList.add("opt", "minus")
     minus.textContent = "-"
-    minus.addEventListener("click", () => { updateSize(-10) })
+    minus.addEventListener("click", () => { updateSize(-5) })
     nav.appendChild(minus)
+}
+
+function addSendToBottomButton() {
+    let nav = document.querySelector(".nav-secondary")
+
+    let bottom = document.createElement("button")
+    bottom.classList.add("opt", "bottom")
+    bottom.textContent = "↓"
+    bottom.addEventListener("click", () => { sendSelectedToBottom() })
+    nav.appendChild(bottom)
 }

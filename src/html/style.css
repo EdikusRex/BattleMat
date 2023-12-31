@@ -7,20 +7,26 @@ body {
     overflow: hidden;
 }
 
+.sel-canvas {
+    z-index: -4;
+    background-size: 100% 100%;
+    position: absolute;
+}
+
 .draw-canvas {
-    z-index: -1;
+    z-index: -5;
     background-size: 100% 100%;
     position: absolute;
 }
 
 .grid {
-    z-index: -2;
+    z-index: -6;
     background-size: 100% 100%;
     position: absolute;
 }
 
 .map {
-    z-index: -3;
+    z-index: -7;
     background-size: 100% 100%;
     background-color: #444;
     background-repeat: no-repeat;
