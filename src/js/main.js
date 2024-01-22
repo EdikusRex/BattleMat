@@ -5,6 +5,7 @@ function main() {
     initGrid()
     initButtons()
     initDropdowns()
+    document.addEventListener('contextmenu', event => event.preventDefault());
 }
 
 // Start the program
