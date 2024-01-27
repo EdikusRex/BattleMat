@@ -49,6 +49,8 @@ function createToken(event) {
 function dragStart(event) {
     let token = event.target
 
+    if (!token.classList.contains("token")) return
+
     if (event.type == "mousedown")
         mouse_dragging = true
 
@@ -58,7 +60,6 @@ function dragStart(event) {
     // If Z level maximum is reached, reset z order of all tokens.
     if (z_layer == 900) resetZLayer()
     token.style.zIndex = z_layer++
-
         // This accounts for the offset between where user clicks and top left corner of the token.
         drags[token.id] = {
             dx: event.clientX - token.style.left.slice(0, -2),

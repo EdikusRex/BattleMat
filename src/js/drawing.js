@@ -30,6 +30,7 @@ function initCanvas() {
 }
 
 function lineStart(event) {
+    if (!event.target.classList.contains("draw-canvas")) return
     if (event.type == "mousedown")
         mouse_drawing = true
 
@@ -50,6 +51,7 @@ function lineStart(event) {
 }
 
 function lineMove(event) {
+    if (!event.target.classList.contains("draw-canvas")) return
     if (event.type == "mousemove" && !mouse_drawing) return
 
     if (currentMode === modes.erase) {
