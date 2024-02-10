@@ -206,6 +206,7 @@ function selStart(event) {
     selStartX = event.pageX - selCanvas.offsetLeft
     selStartY = event.pageY - selCanvas.offsetTop
     selCanvas.style.zIndex = 999
+    clearSelected()
 }
 
 function selMove(event) {
