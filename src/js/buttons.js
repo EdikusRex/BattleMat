@@ -42,8 +42,7 @@ function changeMode(newMode) {
     }
 
     if (newMode === currentMode) {
-        currentMode = modes.none
-        return
+        newMode = modes.none
     }
     currentMode = newMode
 

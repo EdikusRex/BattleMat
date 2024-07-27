@@ -235,6 +235,7 @@ button.option {
     top: 25%;
     right: 50%;
     background-color: rgba(56, 56, 56, 0.5);
+    border: 1px solid rgb(209, 196, 82);
     transform-origin: center;
 }
 
