@@ -51,8 +51,10 @@ function dragStart(event) {
 
     if (!token.classList.contains("token")) return
 
-    if (event.type == "mousedown")
+    if (event.type == "mousedown") {
         mouse_dragging = true
+        event.preventDefault()
+    }
 
     addTokenToSelected(token)
 
@@ -65,11 +67,6 @@ function dragStart(event) {
             dx: event.clientX - token.style.left.slice(0, -2),
             dy: event.clientY - token.style.top.slice(0, -2)
         }
-}
-
-function resetZLayer() {
-    z_layer = 0
-    Array.from(document.getElementsByClassName("token")).sort((a, b) => { return a.style.zIndex - b.style.zIndex }).forEach((x) => x.style.zIndex = z_layer++)
 }
 
 function drag(event) {
@@ -88,6 +85,11 @@ function drag(event) {
 function dragEnd(event) {
     if (event.type == "mouseup")
         mouse_dragging = false
+}
+
+function resetZLayer() {
+    z_layer = 0
+    Array.from(document.getElementsByClassName("token")).sort((a, b) => { return a.style.zIndex - b.style.zIndex }).forEach((x) => x.style.zIndex = z_layer++)
 }
 
 function startSelect() {
@@ -122,7 +124,6 @@ function addTokenToSelected(token) {
 function deleteSelected() {
     selected.filter((x) => { return x != null }).forEach((x) => { x.remove() })
     selected = []
-    changeMode(modes.none)
 }
 
 function resizeSelected(slider) {
