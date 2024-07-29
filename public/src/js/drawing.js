@@ -31,23 +31,11 @@ function initCanvas() {
 
 function lineStart(event) {
     if (!event.target.classList.contains("draw-canvas")) return
-    if (event.type == "mousedown")
-        mouse_drawing = true
-
+    if (event.type != "mousedown") return
     let x_pos = event.pageX - drawCanvas.offsetLeft
     let y_pos = event.pageY - drawCanvas.offsetTop
-
-    ctx.beginPath()
-
-    // This allows a single touch to draw a small dot
-    ctx.moveTo(x_pos, y_pos)
-    ctx.lineTo(x_pos - 5, y_pos + 5)
-    ctx.stroke()
-
-    lines[event.identifier] = {
-        x: x_pos,
-        y: y_pos
-    }
+    drawLineStart(x_pos, y_pos, event.identifier)
+    // TODO: Add socket emit
 }
 
 function lineMove(event) {
@@ -56,25 +44,53 @@ function lineMove(event) {
 
     if (currentMode === modes.erase) {
         ctx.clearRect(event.pageX - 35, event.pageY - 35, 70, 70)
+        // TODO: Add socket emit
         return
     }
 
     let x_pos = event.pageX - drawCanvas.offsetLeft
     let y_pos = event.pageY - drawCanvas.offsetTop
 
-    ctx.moveTo(lines[event.identifier].x, lines[event.identifier].y)
-    ctx.lineTo(x_pos, y_pos)
-    ctx.stroke()
-
-    lines[event.identifier] = {
-        x: x_pos,
-        y: y_pos
-    }
+    drawLineMove(x_pos, y_pos, event.identifier)
+    // TODO: Add socket emit
 }
 
 function lineEnd(event) {
     if (event.type == "mouseup")
         mouse_drawing = false
+        // TODO: Add socket emit
+}
+
+function drawLineStart(x_pos, y_pos, line_id) {
+    mouse_drawing = true
+
+    ctx.beginPath()
+
+    // This allows a single touch to draw a small dot
+    ctx.moveTo(x_pos, y_pos)
+    ctx.lineTo(x_pos - 5, y_pos + 5)
+    ctx.stroke()
+
+    lines[line_id] = {
+        x: x_pos,
+        y: y_pos
+    }
+
+}
+
+function drawLineMove(x_pos, y_pos, line_id) {
+    ctx.moveTo(lines[line_id].x, lines[line_id].y)
+    ctx.lineTo(x_pos, y_pos)
+    ctx.stroke()
+
+    lines[line_id] = {
+        x: x_pos,
+        y: y_pos
+    }
+}
+
+function eraseLineMove(x_pos, y_pos) {
+    ctx.clearRect(x_pos, y_pos - 35, 70, 70)
 }
 
 function changeStrokeColor(clr) {
