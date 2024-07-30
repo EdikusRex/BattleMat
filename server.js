@@ -1,4 +1,4 @@
-let host = 3000
+let port = 3000
 
 // Using express: http://expressjs.com/
 var express = require('express');
@@ -6,14 +6,13 @@ var express = require('express');
 var app = express();
 
 // Set up the server
-// process.env.PORT is related to deploying on heroku
-var server = app.listen(host, listen);
+var server = app.listen(port, listen);
 
 // This call back just tells us that the server has started
 function listen() {
   var host = server.address().address;
   var port = server.address().port;
-  console.log('Example app listening at http://' + host + ':' + port);
+  console.log('Server listening at http://' + host + ':' + port);
 }
 
 app.use(express.static('public'));
