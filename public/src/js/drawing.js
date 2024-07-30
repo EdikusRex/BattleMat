@@ -35,7 +35,7 @@ function lineStart(event) {
     let x_pos = event.pageX - drawCanvas.offsetLeft
     let y_pos = event.pageY - drawCanvas.offsetTop
     drawLineStart(x_pos, y_pos, event.identifier)
-    // TODO: Add socket emit
+    sendLineStart(x_pos, y_pos, event.identifier)
 }
 
 function lineMove(event) {
@@ -44,7 +44,7 @@ function lineMove(event) {
 
     if (currentMode === modes.erase) {
         ctx.clearRect(event.pageX - 35, event.pageY - 35, 70, 70)
-        // TODO: Add socket emit
+        sendLineMove(event.pageX - 35, event.pageY - 35, event.identifier, "erase")
         return
     }
 
@@ -52,13 +52,13 @@ function lineMove(event) {
     let y_pos = event.pageY - drawCanvas.offsetTop
 
     drawLineMove(x_pos, y_pos, event.identifier)
-    // TODO: Add socket emit
+    sendLineMove(x_pos, y_pos, event.identifier, "draw")
 }
 
 function lineEnd(event) {
     if (event.type == "mouseup")
-        mouse_drawing = false
-        // TODO: Add socket emit
+        lineEnd()
+        sendlineEnd()
 }
 
 function drawLineStart(x_pos, y_pos, line_id) {
@@ -87,6 +87,10 @@ function drawLineMove(x_pos, y_pos, line_id) {
         x: x_pos,
         y: y_pos
     }
+}
+
+function lineEnd() {
+    mouse_drawing = false
 }
 
 function eraseLineMove(x_pos, y_pos) {
