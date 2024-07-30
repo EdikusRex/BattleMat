@@ -30,8 +30,31 @@ io.sockets.on('connection',
   
     console.log("We have a new client: " + socket.id);
   
-    // TODO: Add propagation for user socket emissions
-    
+    socket.on('line_start',
+        function(data) {
+          console.log("Received: 'line_start' " + data.x_pos + " " + data.y_pos + " " +  data.line_id);
+        
+          // Send it to all other clients
+          socket.broadcast.emit('line_start', data);
+        }
+      );
+      socket.on('line_move',
+        function(data) {
+          console.log("Received: 'line_move' " + data.x_pos + " " + data.y_pos + " " +  data.line_id + " " + data.draw_mode);
+        
+          // Send it to all other clients
+          socket.broadcast.emit('line_move', data);
+        }
+      );
+      socket.on('line_end',
+        function(data) {
+          console.log("Received: 'line_end' " + data.line_end);
+        
+          // Send it to all other clients
+          socket.broadcast.emit('line_end', data);
+        }
+      );
+      
     socket.on('disconnect', function() {
       console.log("Client has disconnected");
     });
