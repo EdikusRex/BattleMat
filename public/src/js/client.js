@@ -17,10 +17,7 @@ function initClient() {
   socket.on('line_move',
     // When we receive data
     function(data) {
-      console.log("Got: " + data.x_pos + " " + data.y_pos + " " + data.line_id + " " + data.draw_mode);
-      if (data.draw_mode == "erase") {
-        eraseLineMove(data.x_pos, data.y_pos)
-      } 
+      console.log("Got: " + data.x_pos + " " + data.y_pos + " " + data.line_id);
       drawLineMove(data.x_pos, data.y_pos, data.line_id)
     }
   );
@@ -29,6 +26,13 @@ function initClient() {
     function(data) {
       console.log("Got: " + data.line_end);
       lineEnd()
+    }
+  );
+  socket.on('erase',
+    // When we receive data
+    function(data) {
+        console.log("Got: " + data.x_pos + " " + data.y_pos);
+        eraseLineMove(data.x_pos, data.y_pos)
     }
   );
 }
@@ -47,16 +51,15 @@ function sendLineStart(x_pos, y_pos, line_id) {
   socket.emit("line_start", data);
 }
 
-function sendLineMove(x_pos, y_pos, line_id, draw_mode) {
+function sendLineMove(x_pos, y_pos, line_id) {
   console.log(
-    "sendLineMove: " + x_pos + " " + y_pos + " " + line_id + " " + draw_mode
+    "sendLineMove: " + x_pos + " " + y_pos + " " + line_id
   );
 
   var data = {
     x_pos: x_pos,
     y_pos: y_pos,
     line_id: line_id,
-    draw_mode: draw_mode,
   };
 
   // Send data to the socket
@@ -70,4 +73,18 @@ function sendlineEnd() {
 
   // Send data to the socket
   socket.emit("line_end", data);
+}
+
+function sendErase(x_pos, y_pos) {
+    console.log(
+        "sendErase: " + x_pos + " " + y_pos
+      );
+    
+      var data = {
+        x_pos: x_pos,
+        y_pos: y_pos,
+      };
+    
+      // Send data to the socket
+      socket.emit("erase", data);
 }
