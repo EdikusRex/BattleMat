@@ -54,12 +54,28 @@ io.sockets.on('connection',
           socket.broadcast.emit('line_end', data);
         }
       );
-      socket.on('erase',
+      socket.on('erase_start',
         function(data) {
-          console.log("Received: 'erase' " + data.x_pos + " " + data.y_pos);
+          console.log("Received: 'erase_start' " + data.x_pos + " " + data.y_pos);
         
           // Send it to all other clients
-          socket.broadcast.emit('erase', data);
+          socket.broadcast.emit('erase_start', data);
+        }
+      );
+      socket.on('erase_move',
+        function(data) {
+          console.log("Received: 'erase_move' " + data.x_pos + " " + data.y_pos);
+        
+          // Send it to all other clients
+          socket.broadcast.emit('erase_move', data);
+        }
+      );
+      socket.on('erase_end',
+        function(data) {
+          console.log("Received: 'erase_end' " + data.erase_end);
+        
+          // Send it to all other clients
+          socket.broadcast.emit('erase_end', data);
         }
       );
 

@@ -27,11 +27,16 @@ function initCanvas() {
     drawCanvas.addEventListener("mousedown", lineStart)
     drawCanvas.addEventListener("mousemove", lineMove)
     drawCanvas.addEventListener("mouseup", lineEnd)
+
+    drawCanvas.addEventListener("mousedown", eraseLineStartEventHandler)
+    drawCanvas.addEventListener("mousemove", eraseLineMoveEventHandler)
+    drawCanvas.addEventListener("mouseup", eraseLineEndEventHandler)
 }
 
 function lineStart(event) {
     if (!event.target.classList.contains("draw-canvas")) return
     if (event.type != "mousedown") return
+    if (currentMode != modes.draw) return
     let x_pos = event.pageX - drawCanvas.offsetLeft
     let y_pos = event.pageY - drawCanvas.offsetTop
     drawLineStart(x_pos, y_pos, event.identifier)
@@ -41,12 +46,7 @@ function lineStart(event) {
 function lineMove(event) {
     if (!event.target.classList.contains("draw-canvas")) return
     if (event.type == "mousemove" && !mouse_drawing) return
-
-    if (currentMode === modes.erase) {
-        eraseLineMove(event.pageX - 35, event.pageY - 35)
-        sendErase(event.pageX - 35, event.pageY - 35)
-        return
-    }
+    if (currentMode != modes.draw) return
 
     let x_pos = event.pageX - drawCanvas.offsetLeft
     let y_pos = event.pageY - drawCanvas.offsetTop
@@ -59,6 +59,31 @@ function lineEnd(event) {
     if (event.type == "mouseup")
         lineEnd()
         sendlineEnd()
+}
+
+function eraseLineStartEventHandler(event) {
+    if (!event.target.classList.contains("draw-canvas")) return
+    if (event.type != "mousedown") return
+    if (currentMode != modes.erase) return
+    let x_pos = event.pageX - drawCanvas.offsetLeft
+    let y_pos = event.pageY - drawCanvas.offsetTop
+    eraseLineStart(x_pos, y_pos, event.identifier)
+    sendEraseStart(x_pos, y_pos, event.identifier)
+}
+
+function eraseLineMoveEventHandler(event) {
+    if (event.type != "mousemove") return
+    if (mouse_drawing == false) return
+    if (currentMode != modes.erase) return
+    eraseLineMove(event.pageX - 35, event.pageY - 35)
+    sendEraseMove(event.pageX - 35, event.pageY - 35)
+}
+
+function eraseLineEndEventHandler(event) {
+    if (event.type != "mouseup") return
+    if (currentMode != modes.erase) return
+    eraseLineEnd()
+    sendEraseEnd()
 }
 
 function drawLineStart(x_pos, y_pos, line_id) {
@@ -93,8 +118,17 @@ function lineEnd() {
     mouse_drawing = false
 }
 
+function eraseLineStart(x_pos, y_pos) {
+    mouse_drawing = true
+    ctx.clearRect(x_pos, y_pos, 70, 70)
+}
+
 function eraseLineMove(x_pos, y_pos) {
     ctx.clearRect(x_pos, y_pos, 70, 70)
+}
+
+function eraseLineEnd() {
+    mouse_drawing = false
 }
 
 function changeStrokeColor(clr) {
