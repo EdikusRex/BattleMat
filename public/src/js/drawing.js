@@ -43,8 +43,8 @@ function lineMove(event) {
     if (event.type == "mousemove" && !mouse_drawing) return
 
     if (currentMode === modes.erase) {
-        ctx.clearRect(event.pageX - 35, event.pageY - 35, 70, 70)
-        sendLineMove(event.pageX - 35, event.pageY - 35, event.identifier, "erase")
+        eraseLineMove(event.pageX - 35, event.pageY - 35)
+        sendErase(event.pageX - 35, event.pageY - 35)
         return
     }
 
@@ -52,7 +52,7 @@ function lineMove(event) {
     let y_pos = event.pageY - drawCanvas.offsetTop
 
     drawLineMove(x_pos, y_pos, event.identifier)
-    sendLineMove(x_pos, y_pos, event.identifier, "draw")
+    sendLineMove(x_pos, y_pos, event.identifier)
 }
 
 function lineEnd(event) {
@@ -94,7 +94,7 @@ function lineEnd() {
 }
 
 function eraseLineMove(x_pos, y_pos) {
-    ctx.clearRect(x_pos, y_pos - 35, 70, 70)
+    ctx.clearRect(x_pos, y_pos, 70, 70)
 }
 
 function changeStrokeColor(clr) {

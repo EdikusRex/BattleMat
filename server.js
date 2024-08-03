@@ -40,7 +40,7 @@ io.sockets.on('connection',
       );
       socket.on('line_move',
         function(data) {
-          console.log("Received: 'line_move' " + data.x_pos + " " + data.y_pos + " " +  data.line_id + " " + data.draw_mode);
+          console.log("Received: 'line_move' " + data.x_pos + " " + data.y_pos + " " +  data.line_id);
         
           // Send it to all other clients
           socket.broadcast.emit('line_move', data);
@@ -54,7 +54,15 @@ io.sockets.on('connection',
           socket.broadcast.emit('line_end', data);
         }
       );
-      
+      socket.on('erase',
+        function(data) {
+          console.log("Received: 'erase' " + data.x_pos + " " + data.y_pos);
+        
+          // Send it to all other clients
+          socket.broadcast.emit('erase', data);
+        }
+      );
+
     socket.on('disconnect', function() {
       console.log("Client has disconnected");
     });
