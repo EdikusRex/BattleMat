@@ -30,28 +30,28 @@ io.sockets.on('connection',
   
     console.log("We have a new client: " + socket.id);
   
-    socket.on('line_start',
+    socket.on('draw_line_start',
         function(data) {
-          console.log("Received: 'line_start' " + data.x_pos + " " + data.y_pos + " " +  data.line_id);
+          console.log("Received: 'draw_line_start' " + data.x_pos + " " + data.y_pos + " " +  data.line_id);
         
           // Send it to all other clients
-          socket.broadcast.emit('line_start', data);
+          socket.broadcast.emit('draw_line_start', data);
         }
       );
-      socket.on('line_move',
+      socket.on('draw_line_move',
         function(data) {
-          console.log("Received: 'line_move' " + data.x_pos + " " + data.y_pos + " " +  data.line_id);
+          console.log("Received: 'draw_line_move' " + data.x_pos + " " + data.y_pos + " " +  data.line_id);
         
           // Send it to all other clients
-          socket.broadcast.emit('line_move', data);
+          socket.broadcast.emit('draw_line_move', data);
         }
       );
-      socket.on('line_end',
+      socket.on('draw_line_end',
         function(data) {
-          console.log("Received: 'line_end' " + data.line_end);
+          console.log("Received: 'draw_line_end' " + data.draw_line_end);
         
           // Send it to all other clients
-          socket.broadcast.emit('line_end', data);
+          socket.broadcast.emit('draw_line_end', data);
         }
       );
       socket.on('erase_start',
