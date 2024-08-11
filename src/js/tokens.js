@@ -37,9 +37,24 @@ function createToken(event) {
     }, false)
 
     // Add mouse event listeners
-    token.addEventListener("mousedown", dragStart)
-    token.addEventListener("mousemove", drag)
-    token.addEventListener("mouseup", dragEnd)
+    token.addEventListener("mousedown", function(event) {
+        mouse_dragging = true
+        event.preventDefault()
+        dragStart(event)
+    })
+    token.addEventListener("mousemove", function(event) {
+        if (!mouse_dragging) return
+        event.preventDefault()
+        drag(event)
+    })
+    token.addEventListener("mouseup", function(event) {
+        mouse_dragging = false
+        dragEnd(event)
+    })
+    token.addEventListener("mouseout", function(event) {
+        mouse_dragging = false
+        dragEnd(event)
+    })
 
     document.body.appendChild(token)
 
@@ -50,11 +65,6 @@ function dragStart(event) {
     let token = event.target
 
     if (!token.classList.contains("token")) return
-
-    if (event.type == "mousedown") {
-        mouse_dragging = true
-        event.preventDefault()
-    }
 
     addTokenToSelected(token)
 
@@ -73,19 +83,12 @@ function drag(event) {
     let token = event.target
 
     if (!(token.id in drags)) return
-    if (event.type == "mousemove") {
-        if (!mouse_dragging) return
-        event.preventDefault()
-    }
 
     token.style.left = event.clientX - drags[token.id].dx + 'px'
     token.style.top = event.clientY - drags[token.id].dy + 'px'
 }
 
-function dragEnd(event) {
-    if (event.type == "mouseup")
-        mouse_dragging = false
-}
+function dragEnd(event) {}
 
 function resetZLayer() {
     z_layer = 0
@@ -206,7 +209,7 @@ function selStart(event) {
         mouse_selecting = true
     selStartX = event.pageX - selCanvas.offsetLeft
     selStartY = event.pageY - selCanvas.offsetTop
-    selCanvas.style.zIndex = 999
+    selCanvas.style.zIndex = 990
     clearSelected()
 }
 

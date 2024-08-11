@@ -37,17 +37,12 @@ body {
 }
 
 .nav {
-    width: 480px;
-    height: 50px;
     position: fixed;
-    top: 10px;
-    left: 175px;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
+    top: 2px;
+    left: 170px;
     opacity: .5;
     transition: opacity .5s;
-    z-index: 999;
+    z-index: 950;
 }
 
 .nav-secondary {
@@ -55,10 +50,10 @@ body {
     height: 0px;
     position: fixed;
     top: 75px;
-    left: 180px;
+    left: 170px;
     opacity: .5;
     transition: opacity .5s;
-    z-index: 999;
+    z-index: 950;
 }
 
 .nav-secondary:hover,
@@ -69,6 +64,7 @@ body {
 .clr {
     height: 50px;
     width: 50px;
+    margin: 5px 12px;
     background-color: blue;
     border-radius: 50%;
     border: 3px solid rgb(214, 214, 214);
@@ -93,7 +89,7 @@ button.opt {
     cursor: pointer;
     width: 70px;
     height: 50px;
-    margin: 5px 0;
+    margin: 5px;
     font-size: 16px;
     background-color: #03bb56;
     transition: transform .5s;
@@ -111,14 +107,14 @@ button.active:not(.accordion) {
     position: fixed;
     top: 150px;
     left: 270px;
-    z-index: 999;
+    z-index: 950;
 }
 
 .slidecontainer {
     position: fixed;
     top: 75px;
     left: 270px;
-    z-index: 999;
+    z-index: 950;
 }
 
 .slider {
@@ -172,7 +168,7 @@ div.menus {
     opacity: .3;
     transition: opacity .5s;
     overflow-y: visible;
-    z-index: 999;
+    z-index: 950;
 }
 
 div.menus:hover {

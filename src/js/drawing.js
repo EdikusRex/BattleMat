@@ -24,20 +24,32 @@ function initCanvas() {
     }, false)
 
     // Init mouse drawing
-    drawCanvas.addEventListener("mousedown", lineStart)
-    drawCanvas.addEventListener("mousemove", lineMove)
-    drawCanvas.addEventListener("mouseup", lineEnd)
+    drawCanvas.addEventListener("mousedown", function(event) {
+        mouse_drawing = true
+        lineStart(event)
+    })
+    drawCanvas.addEventListener("mousemove", function(event) {
+        if (!mouse_drawing) return
+        lineMove(event)
+    })
+    drawCanvas.addEventListener("mouseup", function(event) {
+        mouse_drawing = false
+        lineEnd(event)
+    })
+    drawCanvas.addEventListener("mouseout", function(event) {
+        mouse_drawing = false
+        lineEnd(event)
+    })
 }
 
 function lineStart(event) {
     if (!event.target.classList.contains("draw-canvas")) return
-    if (event.type == "mousedown")
-        mouse_drawing = true
+
+    ctx.beginPath()
+    drawCanvas.style.zIndex = 990
 
     let x_pos = event.pageX - drawCanvas.offsetLeft
     let y_pos = event.pageY - drawCanvas.offsetTop
-
-    ctx.beginPath()
 
     // This allows a single touch to draw a small dot
     ctx.moveTo(x_pos, y_pos)
@@ -52,7 +64,6 @@ function lineStart(event) {
 
 function lineMove(event) {
     if (!event.target.classList.contains("draw-canvas")) return
-    if (event.type == "mousemove" && !mouse_drawing) return
 
     if (currentMode === modes.erase) {
         ctx.clearRect(event.pageX - 35, event.pageY - 35, 70, 70)
@@ -73,8 +84,7 @@ function lineMove(event) {
 }
 
 function lineEnd(event) {
-    if (event.type == "mouseup")
-        mouse_drawing = false
+    drawCanvas.style.zIndex = -5
 }
 
 function changeStrokeColor(clr) {
