@@ -91,6 +91,7 @@ function eraseEndEventHandler(event) {
 
 function drawLineStart(x_pos, y_pos, line_id) {
     ctx.beginPath()
+    drawCanvas.style.zIndex = 990
 
     // This allows a single touch to draw a small dot
     ctx.moveTo(x_pos, y_pos)
