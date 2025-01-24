@@ -1,11 +1,12 @@
 const mapCanvas = document.getElementById("map")
 const DEFAULT_BACKGROUND_IMAGE = "url(\"../../Assets/Misc/blank.png\")"
+const START_BACKGROUND_IMAGE = "url(\"../../Assets/Misc/bg_start.png\")"
 const CANVAS_SCALAR = 3
 
 let map_token = null
 
 function initMap() {
-    mapCanvas.style.backgroundImage = DEFAULT_BACKGROUND_IMAGE
+    mapCanvas.style.backgroundImage = START_BACKGROUND_IMAGE
     mapCanvas.height = window.innerHeight
     mapCanvas.width = window.innerWidth
 }
@@ -90,7 +91,7 @@ function createBackgroundToken(canvas) {
     bg_token.width = canvas.width * canvas.style.backgroundSize.split("%")[0] * 0.01
     bg_token.height = canvas.height * canvas.style.backgroundSize.split("%")[1].slice(1) * 0.01
     bg_token.style.opacity = 0.4
-    bg_token.style.zIndex = 990
+    bg_token.style.zIndex = 940
     bg_token.classList.add("bg_token")
 
     if (canvas.style.backgroundPosition) {
