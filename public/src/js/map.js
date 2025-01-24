@@ -1,6 +1,6 @@
 const mapCanvas = document.getElementById("map")
 const DEFAULT_BACKGROUND_IMAGE = "url(\"../../Assets/Misc/blank.png\")"
-const START_BACKGROUND_IMAGE = "url(\"../../Assets/Misc/bg_start.png\")"
+const START_BACKGROUND_IMAGE = "url(\"../../Assets/Misc/bg_start.jpg\")"
 const CANVAS_SCALAR = 3
 
 let map_token = null
