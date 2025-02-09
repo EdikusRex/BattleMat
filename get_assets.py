@@ -11,7 +11,7 @@ def add_option(soup: BeautifulSoup, acc: Tag, path: str):
             .replace("(", "\\(").replace(")", "\\)")
         panel = soup.new_tag("div", attrs={"class": "panel"})
         option = soup.new_tag("button", attrs={
-            "class": "option", "style": f"background-image: url(../../{path}/{item})"})
+            "class": "option", "style": f"background-image: url(../../../{path}/{item})"})
 
         panel.append(option)
 

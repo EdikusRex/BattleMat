@@ -179,7 +179,7 @@ function clearNavSecondary() {
 }
 
 function addClrButtons() {
-    let colors = ["#000", "#d60b0b", "#2a11cf", "#24d102", "#fff"]
+    let colors = ["#000", "#d60b0b", "#ae00ff", "#3652ff", "#15bf17", "#fff"]
     let nav = document.querySelector(".nav-secondary")
 
     colors.forEach((color) => {
