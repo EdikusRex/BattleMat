@@ -4,7 +4,7 @@ const ERASER_CURSOR = "url(\"../../Assets/Misc/square.png\")"
 
 // This is necessary for when cursor leaves the canvas while drawing.
 // Only used within event handlers (current client actions).
-let mouse_drawing = false 
+let mouse_drawing = false
 let lines = [, ]
 
 function initCanvas() {
@@ -44,7 +44,6 @@ function drawLineStartEventHandler(event) {
     let x_pos = event.pageX - drawCanvas.offsetLeft
     let y_pos = event.pageY - drawCanvas.offsetTop
     drawLineStart(x_pos, y_pos, event.identifier)
-    sendDrawLineStart(x_pos, y_pos, event.identifier)
 }
 
 function drawLineMoveEventHandler(event) {
@@ -56,13 +55,11 @@ function drawLineMoveEventHandler(event) {
     let y_pos = event.pageY - drawCanvas.offsetTop
 
     drawLineMove(x_pos, y_pos, event.identifier)
-    sendDrawLineMove(x_pos, y_pos, event.identifier)
 }
 
 function drawLineEndEventHandler(event) {
     mouse_drawing = false
     drawLineEnd()
-    sendDrawLineEnd()
 }
 
 function eraseStartEventHandler(event) {
@@ -72,21 +69,18 @@ function eraseStartEventHandler(event) {
     let x_pos = event.pageX - drawCanvas.offsetLeft
     let y_pos = event.pageY - drawCanvas.offsetTop
     eraseStart(x_pos, y_pos, event.identifier)
-    sendEraseStart(x_pos, y_pos, event.identifier)
 }
 
 function eraseMoveEventHandler(event) {
     if (mouse_drawing == false) return
     if (currentMode != modes.erase) return
     eraseMove(event.pageX - 35, event.pageY - 35)
-    sendEraseMove(event.pageX - 35, event.pageY - 35)
 }
 
 function eraseEndEventHandler(event) {
     if (currentMode != modes.erase) return
     mouse_drawing = false
     eraseEnd()
-    sendEraseEnd()
 }
 
 function drawLineStart(x_pos, y_pos, line_id) {
