@@ -1,6 +1,5 @@
 // Init all js objects. The app runs purely off event listeners after that.
 function main() {
-    initClient()
     initCanvas()
     initMap()
     initGrid()
